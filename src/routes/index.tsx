@@ -182,7 +182,7 @@ function Hero() {
       {/* Canvas: 3D "nodeyard" wordmark refracted through the transparent sphere */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
         <div
-          className="animate-float-slow"
+          className="animate-float-slow relative"
           style={{ width: "min(1100px, 88vw)", height: "min(560px, 60vh)" }}
         >
           <Suspense fallback={null}>
