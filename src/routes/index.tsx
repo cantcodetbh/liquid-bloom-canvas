@@ -292,7 +292,7 @@ function Slice({ project: p }: { project: Project }) {
 
 function Footer() {
   return (
-    <footer className="relative z-10 border-t border-[#F6F0E6]/20 bg-[#2D9B83]">
+    <footer className="relative z-10 border-t border-[#F6F0E6]/20 bg-[#0f0308]">
       <div className="flex flex-col items-start justify-between gap-10 px-6 py-16 md:flex-row md:items-end md:px-10">
         <div>
           <div className="text-eyebrow mb-4 text-[#D9A73D]">
