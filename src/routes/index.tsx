@@ -115,7 +115,7 @@ const projects: Project[] = [
 
 function Index() {
   return (
-    <div className="relative flex min-h-screen w-full flex-col overflow-hidden bg-[#0f0308] text-[#F6F0E6]">
+    <div className="relative flex min-h-screen w-full flex-col overflow-hidden bg-[#2D9B83] text-[#F6F0E6]">
       {/* film grain */}
       <div
         aria-hidden
