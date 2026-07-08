@@ -1,7 +1,8 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, MeshTransmissionMaterial, Text } from "@react-three/drei";
+import { Environment, MeshTransmissionMaterial } from "@react-three/drei";
 import { Suspense, useMemo, useRef } from "react";
 import * as THREE from "three";
+
 
 // Cheap smooth noise for vertex displacement
 const noise = (x: number, y: number, z: number, t: number) => {
@@ -69,19 +70,32 @@ function Blob() {
 
 // A large text plane behind the sphere so the transmission material
 // refracts the "nodeyard" wordmark through the glass.
+// Wordmark rendered to a canvas texture on a plane behind the sphere,
+// so the transmission material physically refracts the "nodeyard" text.
 function BackgroundWordmark() {
+  const texture = useMemo(() => {
+    const c = document.createElement("canvas");
+    c.width = 2048;
+    c.height = 512;
+    const ctx = c.getContext("2d")!;
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.fillStyle = "#F6F0E6";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "800 380px 'Inter Tight', system-ui, sans-serif";
+    ctx.letterSpacing = "-20px";
+    ctx.fillText("nodeyard", c.width / 2, c.height / 2);
+    const tex = new THREE.CanvasTexture(c);
+    tex.anisotropy = 8;
+    tex.needsUpdate = true;
+    return tex;
+  }, []);
+
   return (
-    <Text
-      position={[0, 0, -1.6]}
-      fontSize={1.15}
-      color="#F6F0E6"
-      anchorX="center"
-      anchorY="middle"
-      letterSpacing={-0.05}
-      fontWeight={800}
-    >
-      nodeyard
-    </Text>
+    <mesh position={[0, 0, -1.4]}>
+      <planeGeometry args={[6, 1.5]} />
+      <meshBasicMaterial map={texture} transparent toneMapped={false} />
+    </mesh>
   );
 }
 
