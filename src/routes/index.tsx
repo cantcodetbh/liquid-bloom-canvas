@@ -115,7 +115,7 @@ const projects: Project[] = [
 
 function Index() {
   return (
-    <div className="relative flex min-h-screen w-full flex-col overflow-hidden bg-[#2D9B83] text-[#F6F0E6]">
+    <div className="relative flex min-h-screen w-full flex-col overflow-hidden bg-[#0f0308] text-[#F6F0E6]">
       {/* film grain */}
       <div
         aria-hidden
@@ -170,39 +170,36 @@ function Header() {
 
 function Hero() {
   return (
-    <section className="relative z-10 flex flex-col items-start px-6 pb-16 pt-6 md:px-10 md:pb-24">
-      {/* Refracting sphere — right of wordmark */}
+    <section className="relative z-10 flex min-h-[82vh] flex-col justify-between px-6 pb-14 pt-2 md:px-10 md:pb-20">
+      {/* Ambient teal glow behind the sphere */}
       <div
         aria-hidden
-        className="pointer-events-none absolute right-[-8vw] top-[2vh] h-[52vw] w-[52vw] max-h-[720px] max-w-[720px] animate-float-slow md:right-[-4vw]"
+        className="pointer-events-none absolute inset-0 flex items-center justify-center"
       >
-        {/* chromatic bloom behind */}
-        <div className="animate-drift absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_30%,#D9A73D,#BD5D26_35%,#821C16_60%,transparent_75%)] opacity-70 blur-3xl" />
-        <div className="absolute inset-0">
-          <Suspense fallback={null}>
-            <LiquidSphere />
-          </Suspense>
-        </div>
+        <div className="animate-drift h-[70vmin] w-[70vmin] max-h-[820px] max-w-[820px] rounded-full bg-[radial-gradient(circle_at_50%_50%,#2D9B83_0%,#821C16_45%,transparent_70%)] opacity-40 blur-[80px]" />
       </div>
 
-      <div className="text-eyebrow relative z-10 mb-8 flex items-center gap-3">
+      {/* Canvas fills hero: 3D "nodeyard" wordmark refracted through the transparent sphere */}
+      <div className="pointer-events-none absolute inset-0 animate-float-slow">
+        <Suspense fallback={null}>
+          <LiquidSphere />
+        </Suspense>
+      </div>
+
+      {/* Top-left eyebrow */}
+      <div className="text-eyebrow relative z-10 flex items-center gap-3 pt-6">
         <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#D9A73D]" />
         Portfolio · MMXXVI · v03
       </div>
 
-      <h1 className="text-wordmark relative z-10 text-[18vw] md:text-[13vw] lg:text-[12vw] chromatic-shadow">
-        Refracted
-        <br />
-        <span className="text-[#F6F0E6]">software.</span>
-      </h1>
-
-      <div className="relative z-10 mt-10 grid w-full max-w-5xl gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+      {/* Bottom row: intro + CTA */}
+      <div className="relative z-10 grid w-full max-w-6xl gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
         <p className="max-w-md font-mono text-sm leading-relaxed text-[#F6F0E6]/85 md:text-base">
           <span className="text-[#D9A73D]">[00]</span> Small, opinionated
           software by <span className="text-[#F6F0E6]">nodeyard</span> — network
           tooling, macOS companions, film emulation, Linux shells, colour
-          tools. Built quietly, refracted through whatever the current obsession
-          is.
+          tools. Built quietly, refracted through whatever the current
+          obsession is.
         </p>
         <a
           href="#work"
