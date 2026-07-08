@@ -171,25 +171,18 @@ function Header() {
 function Hero() {
   return (
     <section className="relative z-10 flex min-h-[82vh] flex-col justify-between px-6 pb-14 pt-2 md:px-10 md:pb-20">
-      {/* Ambient teal glow behind the sphere */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 flex items-center justify-center"
-      >
-        <div className="animate-drift h-[70vmin] w-[70vmin] max-h-[820px] max-w-[820px] rounded-full bg-[radial-gradient(circle_at_50%_50%,#2D9B83_0%,#821C16_45%,transparent_70%)] opacity-40 blur-[80px]" />
-      </div>
-
       {/* Canvas: 3D "nodeyard" wordmark refracted through the transparent sphere */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
         <div
-          className="animate-float-slow relative"
-          style={{ width: "min(1100px, 88vw)", height: "min(560px, 60vh)" }}
+          className="relative"
+          style={{ width: "100vw", height: "min(680px, 70vh)" }}
         >
           <Suspense fallback={null}>
             <LiquidSphere />
           </Suspense>
         </div>
       </div>
+
 
       {/* Top-left eyebrow */}
       <div className="text-eyebrow relative z-10 flex items-center gap-3 pt-6">
