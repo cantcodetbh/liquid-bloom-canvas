@@ -28,47 +28,54 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  /* Nodeyard bold palette */
+  --color-teal: var(--teal);
+  --color-maroon: var(--maroon);
+  --color-crimson: var(--crimson);
+  --color-burnt: var(--burnt);
+  --color-gold: var(--gold);
+  --color-cream: var(--cream);
+
   --font-sans: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 :root {
   --radius: 0.75rem;
-  --background: oklch(0.14 0.005 260);
-  --foreground: oklch(0.98 0.003 260);
-  --card: oklch(0.18 0.006 260);
-  --card-foreground: oklch(0.98 0.003 260);
-  --popover: oklch(0.18 0.006 260);
-  --popover-foreground: oklch(0.98 0.003 260);
-  --primary: oklch(0.98 0.003 260);
-  --primary-foreground: oklch(0.14 0.005 260);
-  --secondary: oklch(0.24 0.008 260);
-  --secondary-foreground: oklch(0.98 0.003 260);
-  --muted: oklch(0.22 0.007 260);
-  --muted-foreground: oklch(0.68 0.012 260);
-  --accent: oklch(0.28 0.01 260);
-  --accent-foreground: oklch(0.98 0.003 260);
-  --destructive: oklch(0.62 0.22 25);
-  --destructive-foreground: oklch(0.98 0.003 260);
-  --border: oklch(1 0 0 / 8%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.7 0.02 260);
 
-  --glass-bg: oklch(1 0 0 / 3%);
-  --glass-border: oklch(1 0 0 / 10%);
-  --glass-highlight: oklch(1 0 0 / 18%);
-  --shadow-glass: 0 30px 80px -20px oklch(0 0 0 / 60%),
-    inset 0 1px 0 0 oklch(1 0 0 / 8%);
-  --gradient-noise: radial-gradient(
-    ellipse at 50% 0%,
-    oklch(0.28 0.02 260 / 60%),
-    transparent 60%
-  );
+  /* Nodeyard signature palette */
+  --teal: #2d9b83;
+  --maroon: #2e0a17;
+  --crimson: #821c16;
+  --burnt: #bd5d26;
+  --gold: #d9a73d;
+  --cream: #f6f0e6;
+
+  --background: var(--teal);
+  --foreground: var(--cream);
+  --card: var(--maroon);
+  --card-foreground: var(--cream);
+  --popover: var(--maroon);
+  --popover-foreground: var(--cream);
+  --primary: var(--cream);
+  --primary-foreground: var(--maroon);
+  --secondary: var(--crimson);
+  --secondary-foreground: var(--cream);
+  --muted: color-mix(in oklab, var(--teal) 80%, black);
+  --muted-foreground: color-mix(in oklab, var(--cream) 70%, transparent);
+  --accent: var(--gold);
+  --accent-foreground: var(--maroon);
+  --destructive: oklch(0.62 0.22 25);
+  --destructive-foreground: var(--cream);
+  --border: color-mix(in oklab, var(--cream) 20%, transparent);
+  --input: color-mix(in oklab, var(--cream) 25%, transparent);
+  --ring: var(--gold);
 }
 
 .dark {
-  --background: oklch(0.14 0.005 260);
-  --foreground: oklch(0.98 0.003 260);
+  --background: var(--teal);
+  --foreground: var(--cream);
 }
 
 @layer base {
@@ -84,21 +91,19 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-}
 
-@utility glass-panel {
-  background-color: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  box-shadow: var(--shadow-glass);
+  ::selection {
+    background: var(--gold);
+    color: var(--maroon);
+  }
 }
 
 @utility text-wordmark {
   font-family: var(--font-sans);
-  font-weight: 700;
-  letter-spacing: -0.05em;
-  line-height: 0.85;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  line-height: 0.82;
+  text-transform: uppercase;
 }
 
 @utility text-eyebrow {
@@ -106,14 +111,28 @@
   font-size: 0.7rem;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: var(--muted-foreground);
+}
+
+@utility chromatic-shadow {
+  text-shadow:
+    -0.02em 0 0 color-mix(in oklab, var(--crimson) 70%, transparent),
+    0.02em 0 0 color-mix(in oklab, var(--teal) 60%, transparent);
 }
 
 @keyframes float-slow {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-10px); }
 }
 
 @utility animate-float-slow {
-  animation: float-slow 6s ease-in-out infinite;
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0%, 100% { transform: translate3d(0,0,0) scale(1); }
+  50% { transform: translate3d(2%, -1%, 0) scale(1.03); }
+}
+
+@utility animate-drift {
+  animation: drift 14s ease-in-out infinite;
 }
