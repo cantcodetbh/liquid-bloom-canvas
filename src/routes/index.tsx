@@ -34,6 +34,10 @@ type Project = {
   tags: string[];
   href: string;
   cta: string;
+  bg: string;
+  fg: string;
+  accent: string;
+  chipBorder: string;
 };
 
 const projects: Project[] = [
@@ -42,71 +46,83 @@ const projects: Project[] = [
     title: "SHARE Atlas",
     kind: "Network tooling",
     description:
-      "A Windows desktop network inventory and mapping tool for IT support teams, combining switch data, endpoint information, site scanning and infrastructure context into one searchable view.",
-    tags: [".NET", "WPF", "Aruba", "MECM", "Active Directory"],
+      "Windows desktop network inventory and mapping for IT support — switch data, endpoints, site scans and infrastructure context in one searchable view.",
+    tags: [".NET", "WPF", "Aruba", "MECM", "AD"],
     href: "#",
     cta: "Internal tool",
+    bg: "bg-[#2E0A17]",
+    fg: "text-[#F6F0E6]",
+    accent: "text-[#D9A73D]",
+    chipBorder: "border-[#F6F0E6]/25",
   },
   {
     index: "02",
     title: "Daycast",
     kind: "Daily context",
     description:
-      "A glanceable day-planning companion built around calendar visibility, upcoming events and calm context without turning your schedule into another noisy dashboard.",
-    tags: ["macOS", "Widgets", "Calendar", "Swift", "Personal tools"],
+      "A glanceable day-planning companion — calendar visibility and upcoming events, calm context without turning your schedule into another noisy dashboard.",
+    tags: ["macOS", "Widgets", "Calendar", "Swift"],
     href: "https://github.com/cantcodetbh/Daycast",
     cta: "View project",
+    bg: "bg-[#821C16]",
+    fg: "text-[#F6F0E6]",
+    accent: "text-[#D9A73D]",
+    chipBorder: "border-[#F6F0E6]/25",
   },
   {
     index: "03",
     title: "FilmForge",
     kind: "Image processing",
     description:
-      "A film-look photo processing experiment focused on colour response, grain, halation, bloom, softness and camera-specific imperfections rather than simple preset sliders.",
-    tags: ["Film emulation", "Core Image", "Photography", "macOS"],
+      "Film-look photo processing built around colour response, grain, halation, bloom and camera-specific imperfections — not just preset sliders.",
+    tags: ["Core Image", "Emulation", "Photography", "macOS"],
     href: "https://github.com/cantcodetbh/FilmForge",
     cta: "View project",
+    bg: "bg-[#BD5D26]",
+    fg: "text-[#2E0A17]",
+    accent: "text-[#2E0A17]",
+    chipBorder: "border-[#2E0A17]/30",
   },
   {
     index: "04",
     title: "Homeshell",
     kind: "Custom quickshell",
     description:
-      "A custom desktop shell for my Arch Linux setup, built with Hyprland and Quickshell. Ambient corner bars, drawer controls, wallpaper-driven colours, workspace overview and system controls.",
+      "A custom desktop shell for my Arch/Hyprland setup — ambient corner bars, drawer controls, wallpaper-driven colours, workspace overview and system controls.",
     tags: ["Linux", "Quickshell", "Arch", "Hyprland"],
     href: "https://github.com/cantcodetbh/homeshell",
     cta: "View project",
+    bg: "bg-[#D9A73D]",
+    fg: "text-[#2E0A17]",
+    accent: "text-[#821C16]",
+    chipBorder: "border-[#2E0A17]/30",
   },
   {
     index: "05",
     title: "Paletteyard",
     kind: "Colour tooling",
     description:
-      "A small browser-based palette builder for generating colour sets from a seed hex, saving local palettes and copying clean CSS variables or JSON exports.",
-    tags: ["Palette generation", "CSS variables", "Local storage"],
+      "A browser-based palette builder — generate colour sets from a seed hex, save local palettes and copy clean CSS variables or JSON exports.",
+    tags: ["Palettes", "CSS vars", "Local storage"],
     href: "https://palette.nodeyard.co.uk/",
     cta: "Open project",
+    bg: "bg-[#F6F0E6]",
+    fg: "text-[#2E0A17]",
+    accent: "text-[#BD5D26]",
+    chipBorder: "border-[#2E0A17]/30",
   },
 ];
 
 function Index() {
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
-      {/* ambient glow */}
+    <div className="relative flex min-h-screen w-full flex-col overflow-hidden bg-[#2D9B83] text-[#F6F0E6]">
+      {/* film grain */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 60% at 50% 0%, oklch(0.28 0.02 260 / 55%), transparent 65%)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 -z-20 opacity-[0.035]"
+        className="pointer-events-none fixed inset-0 z-30 opacity-[0.06] mix-blend-overlay"
         style={{
           backgroundImage:
-            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")",
+            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")",
         }}
       />
 
@@ -120,21 +136,32 @@ function Index() {
 
 function Header() {
   return (
-    <header className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-6 py-6 md:px-10">
-      <a href="/" className="text-sm font-medium tracking-tight">
+    <header className="relative z-40 flex items-center justify-between px-6 py-6 md:px-10">
+      <a
+        href="/"
+        className="text-wordmark text-2xl tracking-[-0.05em]"
+      >
         nodeyard
       </a>
-      <nav className="flex items-center gap-6 text-eyebrow">
-        <a href="#work" className="hover:text-foreground transition-colors">
+      <nav className="text-eyebrow flex items-center gap-8">
+        <a href="#work" className="transition-colors hover:text-[#D9A73D]">
           Work
         </a>
         <a
           href="https://github.com/cantcodetbh"
           target="_blank"
           rel="noreferrer"
-          className="hover:text-foreground transition-colors"
+          className="transition-colors hover:text-[#D9A73D]"
         >
           GitHub
+        </a>
+        <a
+          href="https://palette.nodeyard.co.uk/"
+          target="_blank"
+          rel="noreferrer"
+          className="hidden transition-colors hover:text-[#D9A73D] md:inline"
+        >
+          Palette
         </a>
       </nav>
     </header>
@@ -143,40 +170,47 @@ function Header() {
 
 function Hero() {
   return (
-    <section className="relative mx-auto flex min-h-[92vh] max-w-7xl flex-col justify-center px-6 md:px-10">
-      {/* Sphere absolutely centered behind wordmark */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <div className="h-[70vmin] w-[70vmin] max-h-[720px] max-w-[720px] animate-float-slow">
+    <section className="relative z-10 flex flex-col items-start px-6 pb-16 pt-6 md:px-10 md:pb-24">
+      {/* Refracting sphere — right of wordmark */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute right-[-8vw] top-[2vh] h-[52vw] w-[52vw] max-h-[720px] max-w-[720px] animate-float-slow md:right-[-4vw]"
+      >
+        {/* chromatic bloom behind */}
+        <div className="animate-drift absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_30%,#D9A73D,#BD5D26_35%,#821C16_60%,transparent_75%)] opacity-70 blur-3xl" />
+        <div className="absolute inset-0">
           <Suspense fallback={null}>
             <LiquidSphere />
           </Suspense>
         </div>
       </div>
 
-      <div className="relative z-10 flex flex-col gap-10">
-        <div className="flex items-center gap-3 text-eyebrow">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-foreground" />
-          Portfolio · MMXXVI
-        </div>
+      <div className="text-eyebrow relative z-10 mb-8 flex items-center gap-3">
+        <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#D9A73D]" />
+        Portfolio · MMXXVI · v03
+      </div>
 
-        <h1 className="text-wordmark text-[22vw] leading-[0.82] md:text-[16vw] lg:text-[13rem]">
-          nodeyard
-        </h1>
+      <h1 className="text-wordmark relative z-10 text-[18vw] md:text-[13vw] lg:text-[12vw] chromatic-shadow">
+        Refracted
+        <br />
+        <span className="text-[#F6F0E6]">software.</span>
+      </h1>
 
-        <div className="flex max-w-2xl flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <p className="max-w-md text-base leading-relaxed text-muted-foreground md:text-lg">
-            Small, opinionated software — network tooling, macOS companions,
-            film emulation, Linux shells. Built quietly, refracted through
-            whatever the current obsession is.
-          </p>
-          <a
-            href="#work"
-            className="group inline-flex items-center gap-2 self-start rounded-full border border-border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-accent md:self-auto"
-          >
-            Enter the yard
-            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </a>
-        </div>
+      <div className="relative z-10 mt-10 grid w-full max-w-5xl gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+        <p className="max-w-md font-mono text-sm leading-relaxed text-[#F6F0E6]/85 md:text-base">
+          <span className="text-[#D9A73D]">[00]</span> Small, opinionated
+          software by <span className="text-[#F6F0E6]">nodeyard</span> — network
+          tooling, macOS companions, film emulation, Linux shells, colour
+          tools. Built quietly, refracted through whatever the current obsession
+          is.
+        </p>
+        <a
+          href="#work"
+          className="text-eyebrow group inline-flex items-center gap-3 self-start rounded-full border border-[#F6F0E6]/40 px-5 py-3 transition-colors hover:border-[#D9A73D] hover:text-[#D9A73D] md:self-auto"
+        >
+          Enter the yard
+          <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+        </a>
       </div>
     </section>
   );
@@ -184,92 +218,99 @@ function Hero() {
 
 function Work() {
   return (
-    <section
-      id="work"
-      className="relative mx-auto max-w-7xl px-6 pb-32 pt-24 md:px-10"
-    >
-      <div className="mb-16 flex items-end justify-between">
-        <div>
-          <div className="text-eyebrow mb-3">Selected work · 05</div>
-          <h2 className="text-wordmark text-5xl md:text-7xl">Projects</h2>
+    <section id="work" className="relative z-10 flex w-full flex-col">
+      <div className="flex items-end justify-between border-t border-[#F6F0E6]/20 px-6 py-6 md:px-10">
+        <div className="text-eyebrow">Selected work · 05</div>
+        <div className="text-eyebrow hidden md:block">
+          Hover a slice to open ↓
         </div>
       </div>
 
-      <ul className="flex flex-col gap-4">
+      {/* Slice strip */}
+      <div className="flex min-h-[560px] w-full border-t border-[#F6F0E6]/20 md:min-h-[640px]">
         {projects.map((p) => (
-          <ProjectRow key={p.index} project={p} />
+          <Slice key={p.index} project={p} />
         ))}
-      </ul>
+      </div>
     </section>
   );
 }
 
-function ProjectRow({ project }: { project: Project }) {
+function Slice({ project: p }: { project: Project }) {
+  const isExternal = p.href.startsWith("http");
   return (
-    <li>
-      <a
-        href={project.href}
-        target={project.href.startsWith("http") ? "_blank" : undefined}
-        rel="noreferrer"
-        className="glass-panel group relative flex flex-col gap-6 overflow-hidden rounded-2xl p-6 transition-all hover:-translate-y-0.5 md:flex-row md:items-center md:gap-10 md:p-8"
+    <a
+      href={p.href}
+      target={isExternal ? "_blank" : undefined}
+      rel="noreferrer"
+      className={`group relative flex-[1] cursor-pointer overflow-hidden border-r border-[#F6F0E6]/20 transition-[flex-grow] duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] last:border-r-0 hover:flex-[6] ${p.bg} ${p.fg}`}
+    >
+      {/* Index number at top */}
+      <div
+        className={`absolute left-6 top-6 font-mono text-xs opacity-70 transition-opacity duration-500 ${p.accent}`}
       >
-        {/* refraction highlight */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-          style={{
-            background:
-              "radial-gradient(600px circle at var(--x,50%) var(--y,50%), oklch(1 0 0 / 6%), transparent 40%)",
-          }}
-        />
+        {p.index}
+      </div>
 
-        <div className="font-mono text-xs text-muted-foreground md:w-10">
-          {project.index}
-        </div>
+      {/* Rotated title (collapsed state) */}
+      <div className="absolute left-1/2 top-20 -translate-x-1/2 transition-all duration-700 group-hover:left-10 group-hover:top-16 group-hover:translate-x-0">
+        <h3 className="text-wordmark origin-left rotate-90 whitespace-nowrap text-3xl transition-all duration-700 group-hover:rotate-0 group-hover:text-5xl md:group-hover:text-6xl">
+          {p.title}
+        </h3>
+      </div>
 
-        <div className="flex-1">
-          <div className="text-eyebrow mb-2">{project.kind}</div>
-          <h3 className="text-wordmark text-3xl md:text-4xl">{project.title}</h3>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
-            {project.description}
-          </p>
-          <div className="mt-5 flex flex-wrap gap-2">
-            {project.tags.map((t) => (
-              <span
-                key={t}
-                className="rounded-full border border-border bg-secondary/40 px-3 py-1 text-xs text-muted-foreground"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
+      {/* Expanded detail */}
+      <div className="pointer-events-none flex h-full flex-col justify-end p-10 pt-40 opacity-0 transition-opacity duration-500 delay-200 group-hover:pointer-events-auto group-hover:opacity-100 md:p-12 md:pt-48">
+        <span className={`text-eyebrow mb-4 ${p.accent}`}>
+          {p.index} / {p.kind}
+        </span>
+        <p className="mb-6 max-w-md text-lg font-medium leading-snug md:text-xl">
+          {p.description}
+        </p>
+        <div className="mb-8 flex flex-wrap gap-2">
+          {p.tags.map((t) => (
+            <span
+              key={t}
+              className={`rounded-full border ${p.chipBorder} px-3 py-1 font-mono text-[10px] uppercase tracking-widest`}
+            >
+              {t}
+            </span>
+          ))}
         </div>
+        <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest">
+          <span>{p.cta}</span>
+          <span className={`h-px w-10 ${p.fg === "text-[#F6F0E6]" ? "bg-[#F6F0E6]" : "bg-[#2E0A17]"} transition-all duration-500 group-hover:w-20`} />
+          <ArrowUpRight className="h-4 w-4" />
+        </div>
+      </div>
 
-        <div className="flex items-center gap-2 self-start text-sm font-medium md:self-center">
-          <span className="hidden md:inline">{project.cta}</span>
-          <span className="glass-panel flex h-11 w-11 items-center justify-center rounded-full transition-transform group-hover:rotate-45">
-            <ArrowUpRight className="h-4 w-4" />
-          </span>
-        </div>
-      </a>
-    </li>
+      {/* Subtle refraction sheen on hover */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,transparent_35%,rgba(255,255,255,0.08)_50%,transparent_65%)] opacity-0 transition-opacity duration-700 group-hover:opacity-100"
+      />
+    </a>
   );
 }
 
 function Footer() {
   return (
-    <footer className="border-t border-border">
-      <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 px-6 py-16 md:flex-row md:items-end md:px-10">
+    <footer className="relative z-10 border-t border-[#F6F0E6]/20 bg-[#2D9B83]">
+      <div className="flex flex-col items-start justify-between gap-10 px-6 py-16 md:flex-row md:items-end md:px-10">
         <div>
-          <div className="text-eyebrow mb-4">Hosted from nodeyard</div>
-          <div className="text-wordmark text-6xl md:text-8xl">nodeyard</div>
+          <div className="text-eyebrow mb-4 text-[#D9A73D]">
+            Hosted from nodeyard
+          </div>
+          <div className="text-wordmark text-6xl md:text-9xl chromatic-shadow">
+            nodeyard
+          </div>
         </div>
-        <div className="flex flex-col gap-2 text-sm text-muted-foreground">
+        <div className="flex flex-col gap-2 font-mono text-xs uppercase tracking-widest text-[#F6F0E6]/80">
           <a
             href="https://github.com/cantcodetbh"
             target="_blank"
             rel="noreferrer"
-            className="hover:text-foreground transition-colors"
+            className="transition-colors hover:text-[#D9A73D]"
           >
             github/cantcodetbh ↗
           </a>
@@ -277,11 +318,13 @@ function Footer() {
             href="https://palette.nodeyard.co.uk/"
             target="_blank"
             rel="noreferrer"
-            className="hover:text-foreground transition-colors"
+            className="transition-colors hover:text-[#D9A73D]"
           >
             palette.nodeyard.co.uk ↗
           </a>
-          <span>© {new Date().getFullYear()} nodeyard</span>
+          <span className="opacity-60">
+            © {new Date().getFullYear()} nodeyard · Manchester
+          </span>
         </div>
       </div>
     </footer>
