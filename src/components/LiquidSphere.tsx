@@ -79,25 +79,24 @@ function Blob() {
 function BackgroundWordmark() {
   const texture = useMemo(() => {
     const c = document.createElement("canvas");
-    c.width = 2048;
-    c.height = 512;
+    c.width = 4096;
+    c.height = 768;
     const ctx = c.getContext("2d")!;
     ctx.clearRect(0, 0, c.width, c.height);
     ctx.fillStyle = "#F6F0E6";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.font = "800 380px 'Inter Tight', system-ui, sans-serif";
-    ctx.letterSpacing = "-20px";
+    ctx.font = "800 640px 'Inter Tight', system-ui, sans-serif";
     ctx.fillText("nodeyard", c.width / 2, c.height / 2);
     const tex = new THREE.CanvasTexture(c);
-    tex.anisotropy = 8;
+    tex.anisotropy = 16;
     tex.needsUpdate = true;
     return tex;
   }, []);
 
   return (
     <mesh position={[0, 0, -1.4]}>
-      <planeGeometry args={[9, 2.2]} />
+      <planeGeometry args={[18, 3.4]} />
       <meshBasicMaterial map={texture} transparent toneMapped={false} />
     </mesh>
   );
@@ -111,14 +110,15 @@ export function LiquidSphere() {
       gl={{ antialias: true, alpha: true }}
       style={{ background: "transparent" }}
     >
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[3, 3, 3]} intensity={1.1} />
-      <directionalLight position={[-3, -2, -1]} intensity={0.5} color="#2D9B83" />
+      <ambientLight intensity={0.35} />
+      <directionalLight position={[3, 3, 3]} intensity={0.5} />
+      <directionalLight position={[-3, -2, -1]} intensity={0.3} color="#2D9B83" />
       <Suspense fallback={null}>
         <BackgroundWordmark />
         <Blob />
-        <Environment preset="studio" />
+        <Environment preset="apartment" background={false} />
       </Suspense>
     </Canvas>
   );
 }
+
