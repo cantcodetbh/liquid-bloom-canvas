@@ -3,16 +3,14 @@ import { Environment, MeshTransmissionMaterial } from "@react-three/drei";
 import { Suspense, useMemo, useRef } from "react";
 import * as THREE from "three";
 
-// Classic 3D simplex noise (Ashima) — used to deform vertices for liquid feel
-const noise = (() => {
-  // Lightweight pseudo simplex via layered sin/cos for cheap smooth deformation
-  return (x: number, y: number, z: number, t: number) => {
-    const a = Math.sin(x * 1.3 + t) * Math.cos(y * 1.7 - t * 0.9);
-    const b = Math.sin(y * 1.1 - t * 0.8) * Math.cos(z * 1.5 + t * 0.7);
-    const c = Math.sin(z * 1.4 + t * 0.6) * Math.cos(x * 1.2 - t);
-    return (a + b + c) / 3;
-  };
-})();
+
+// Cheap smooth noise for vertex displacement
+const noise = (x: number, y: number, z: number, t: number) => {
+  const a = Math.sin(x * 1.3 + t) * Math.cos(y * 1.7 - t * 0.9);
+  const b = Math.sin(y * 1.1 - t * 0.8) * Math.cos(z * 1.5 + t * 0.7);
+  const c = Math.sin(z * 1.4 + t * 0.6) * Math.cos(x * 1.2 - t);
+  return (a + b + c) / 3;
+};
 
 function Blob() {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -30,7 +28,7 @@ function Blob() {
       const oy = original[i + 1];
       const oz = original[i + 2];
       const n = noise(ox * 1.4, oy * 1.4, oz * 1.4, t);
-      const disp = 1 + n * 0.14;
+      const disp = 1 + n * 0.12;
       pos[i] = ox * disp;
       pos[i + 1] = oy * disp;
       pos[i + 2] = oz * disp;
@@ -39,33 +37,64 @@ function Blob() {
     geometry.computeVertexNormals();
 
     if (meshRef.current) {
-      meshRef.current.rotation.y = t * 0.5;
-      meshRef.current.rotation.x = Math.sin(t * 0.4) * 0.2;
+      meshRef.current.rotation.y = t * 0.45;
+      meshRef.current.rotation.x = Math.sin(t * 0.4) * 0.18;
     }
   });
 
   return (
     <mesh ref={meshRef} geometry={geometry}>
       <MeshTransmissionMaterial
-        samples={6}
-        resolution={512}
+        samples={8}
+        resolution={768}
         transmission={1}
-        roughness={0.05}
-        thickness={1.4}
-        ior={1.4}
-        chromaticAberration={0.35}
-        anisotropy={0.4}
-        distortion={0.4}
-        distortionScale={0.3}
-        temporalDistortion={0.1}
+        roughness={0.02}
+        thickness={0.55}
+        ior={1.32}
+        chromaticAberration={0.18}
+        anisotropy={0.3}
+        distortion={0.22}
+        distortionScale={0.28}
+        temporalDistortion={0.08}
         backside
-        backsideThickness={0.6}
+        backsideThickness={0.3}
         clearcoat={1}
-        clearcoatRoughness={0.1}
-        attenuationDistance={1}
-        attenuationColor="#ffffff"
-        color="#ffffff"
+        clearcoatRoughness={0.08}
+        attenuationDistance={0.6}
+        attenuationColor="#2D9B83"
+        color="#eaf8f2"
       />
+    </mesh>
+  );
+}
+
+// A large text plane behind the sphere so the transmission material
+// refracts the "nodeyard" wordmark through the glass.
+// Wordmark rendered to a canvas texture on a plane behind the sphere,
+// so the transmission material physically refracts the "nodeyard" text.
+function BackgroundWordmark() {
+  const texture = useMemo(() => {
+    const c = document.createElement("canvas");
+    c.width = 2048;
+    c.height = 512;
+    const ctx = c.getContext("2d")!;
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.fillStyle = "#F6F0E6";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "800 380px 'Inter Tight', system-ui, sans-serif";
+    ctx.letterSpacing = "-20px";
+    ctx.fillText("nodeyard", c.width / 2, c.height / 2);
+    const tex = new THREE.CanvasTexture(c);
+    tex.anisotropy = 8;
+    tex.needsUpdate = true;
+    return tex;
+  }, []);
+
+  return (
+    <mesh position={[0, 0, -1.4]}>
+      <planeGeometry args={[9, 2.2]} />
+      <meshBasicMaterial map={texture} transparent toneMapped={false} />
     </mesh>
   );
 }
@@ -74,14 +103,15 @@ export function LiquidSphere() {
   return (
     <Canvas
       dpr={[1, 2]}
-      camera={{ position: [0, 0, 3.2], fov: 40 }}
+      camera={{ position: [0, 0, 6], fov: 32 }}
       gl={{ antialias: true, alpha: true }}
       style={{ background: "transparent" }}
     >
-      <ambientLight intensity={0.4} />
-      <directionalLight position={[3, 3, 3]} intensity={1.2} />
-      <directionalLight position={[-3, -2, -1]} intensity={0.6} color="#8ab4ff" />
+      <ambientLight intensity={0.5} />
+      <directionalLight position={[3, 3, 3]} intensity={1.1} />
+      <directionalLight position={[-3, -2, -1]} intensity={0.5} color="#2D9B83" />
       <Suspense fallback={null}>
+        <BackgroundWordmark />
         <Blob />
         <Environment preset="studio" />
       </Suspense>
