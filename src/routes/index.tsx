@@ -179,11 +179,13 @@ function Hero() {
         <div className="animate-drift h-[70vmin] w-[70vmin] max-h-[820px] max-w-[820px] rounded-full bg-[radial-gradient(circle_at_50%_50%,#2D9B83_0%,#821C16_45%,transparent_70%)] opacity-40 blur-[80px]" />
       </div>
 
-      {/* Canvas fills hero: 3D "nodeyard" wordmark refracted through the transparent sphere */}
-      <div className="pointer-events-none absolute inset-0 animate-float-slow">
-        <Suspense fallback={null}>
-          <LiquidSphere />
-        </Suspense>
+      {/* Canvas: 3D "nodeyard" wordmark refracted through the transparent sphere */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="animate-float-slow h-[68vmin] w-[92vmin] max-h-[720px] max-w-[1200px]">
+          <Suspense fallback={null}>
+            <LiquidSphere />
+          </Suspense>
+        </div>
       </div>
 
       {/* Top-left eyebrow */}
