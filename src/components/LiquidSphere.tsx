@@ -103,7 +103,7 @@ export function LiquidSphere() {
   return (
     <Canvas
       dpr={[1, 2]}
-      camera={{ position: [0, 0, 3.2], fov: 40 }}
+      camera={{ position: [0, 0, 6], fov: 32 }}
       gl={{ antialias: true, alpha: true }}
       style={{ background: "transparent" }}
     >
