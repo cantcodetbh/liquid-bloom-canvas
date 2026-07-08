@@ -93,7 +93,7 @@ function BackgroundWordmark() {
 
   return (
     <mesh position={[0, 0, -1.4]}>
-      <planeGeometry args={[6, 1.5]} />
+      <planeGeometry args={[9, 2.2]} />
       <meshBasicMaterial map={texture} transparent toneMapped={false} />
     </mesh>
   );
