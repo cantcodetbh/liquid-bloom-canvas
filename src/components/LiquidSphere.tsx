@@ -78,7 +78,7 @@ function BackgroundWordmark() {
       anchorX="center"
       anchorY="middle"
       letterSpacing={-0.05}
-      font="https://fonts.gstatic.com/s/intertight/v7/NGSyv5nBOFVDpVBQAy2mNq7l5Ke5EY0.woff"
+      fontWeight={800}
     >
       nodeyard
     </Text>
