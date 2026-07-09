@@ -41,6 +41,9 @@ type Project = {
   noise: string;
 };
 
+const roseHoverLink =
+  "transition-[color,font-weight] duration-200 hover:font-bold hover:text-[#E3738D]";
+
 const buildGrainSvg = (colour: string) =>
   encodeURIComponent(
     `<svg xmlns="http://www.w3.org/2000/svg" width="260" height="260" viewBox="0 0 260 260"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="1.28" numOctaves="3" seed="9" stitchTiles="stitch" result="noise"/><feColorMatrix in="noise" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4.4 -2.05" result="specks"/><feComposite in="SourceGraphic" in2="specks" operator="in"/></filter><rect width="260" height="260" fill="${colour}" filter="url(#grain)"/></svg>`,
@@ -265,14 +268,14 @@ function Header() {
         nodeyard
       </a>
       <nav className="text-eyebrow relative z-10 flex items-center gap-8">
-        <a href="#work" className="transition-colors hover:text-[#E3738D]">
+        <a href="#work" className={roseHoverLink}>
           Work
         </a>
         <a
           href="https://github.com/cantcodetbh"
           target="_blank"
           rel="noreferrer"
-          className="transition-colors hover:text-[#E3738D]"
+          className={roseHoverLink}
         >
           GitHub
         </a>
@@ -280,7 +283,7 @@ function Header() {
           href="https://palette.nodeyard.co.uk/"
           target="_blank"
           rel="noreferrer"
-          className="hidden transition-colors hover:text-[#E3738D] md:inline"
+          className={`hidden md:inline ${roseHoverLink}`}
         >
           Palette
         </a>
@@ -339,10 +342,10 @@ function Hero() {
         </p>
         <a
           href="#work"
-          className="text-eyebrow group inline-flex items-center gap-3 self-start rounded-full border border-[#F6F0E6]/40 px-5 py-3 transition-colors hover:border-[#E3738D] hover:text-[#E3738D] md:self-auto"
+          className="text-eyebrow group inline-flex items-center gap-3 self-start rounded-full border-2 border-[#F6F0E6]/40 px-5 py-3 transition-[border-color,color,font-weight] duration-200 hover:border-[#E3738D] hover:font-bold hover:text-[#E3738D] md:self-auto"
         >
           Enter the yard
-          <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          <ArrowUpRight className="h-4 w-4 [stroke-width:1.75] transition-[stroke-width,transform] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:[stroke-width:3]" />
         </a>
       </div>
     </section>
@@ -484,7 +487,7 @@ function Footer() {
             href="https://github.com/cantcodetbh"
             target="_blank"
             rel="noreferrer"
-            className="transition-colors hover:text-[#E3738D]"
+            className={roseHoverLink}
           >
             github/cantcodetbh ↗
           </a>
@@ -492,7 +495,7 @@ function Footer() {
             href="https://palette.nodeyard.co.uk/"
             target="_blank"
             rel="noreferrer"
-            className="transition-colors hover:text-[#E3738D]"
+            className={roseHoverLink}
           >
             palette.nodeyard.co.uk ↗
           </a>
