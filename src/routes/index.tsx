@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
 
 const LiquidSphere = lazy(() =>
@@ -157,6 +157,8 @@ function Index() {
         }}
       />
 
+      <CursorFollower />
+
       <section id="hero" className="relative min-h-screen snap-start snap-always overflow-visible">
         <Header />
         <Hero />
@@ -164,6 +166,92 @@ function Index() {
       <Work />
       <Footer />
     </div>
+  );
+}
+
+function CursorFollower() {
+  const cursorRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const coarsePointer = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (coarsePointer || prefersReducedMotion) return;
+
+    const cursor = cursorRef.current;
+    if (!cursor) return;
+
+    let targetX = window.innerWidth / 2;
+    let targetY = window.innerHeight / 2;
+    let currentX = targetX;
+    let currentY = targetY;
+    let previousX = currentX;
+    let previousY = currentY;
+    let angle = 0;
+    let rafId = 0;
+    let hasEntered = false;
+
+    const moveCursor = (event: PointerEvent) => {
+      targetX = event.clientX;
+      targetY = event.clientY;
+
+      if (!hasEntered) {
+        hasEntered = true;
+        currentX = targetX;
+        currentY = targetY;
+        previousX = currentX;
+        previousY = currentY;
+        cursor.style.opacity = "1";
+      }
+    };
+
+    const hideCursor = () => {
+      cursor.style.opacity = "0";
+      hasEntered = false;
+    };
+
+    const animate = () => {
+      currentX += (targetX - currentX) * 0.24;
+      currentY += (targetY - currentY) * 0.24;
+
+      const velocityX = currentX - previousX;
+      const velocityY = currentY - previousY;
+      const speed = Math.hypot(velocityX, velocityY);
+
+      if (speed > 0.18) {
+        angle = Math.atan2(velocityY, velocityX) * (180 / Math.PI);
+      }
+
+      const stretch = Math.min(1 + speed * 0.022, 1.62);
+      const squash = Math.max(1 - speed * 0.006, 0.84);
+      const size = 34;
+
+      cursor.style.transform = `translate3d(${currentX - size / 2}px, ${currentY - size / 2}px, 0) rotate(${angle}deg) scale(${stretch}, ${squash})`;
+
+      previousX = currentX;
+      previousY = currentY;
+      rafId = window.requestAnimationFrame(animate);
+    };
+
+    window.addEventListener("pointermove", moveCursor, { passive: true });
+    window.addEventListener("pointerleave", hideCursor);
+    window.addEventListener("blur", hideCursor);
+    rafId = window.requestAnimationFrame(animate);
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      window.removeEventListener("pointermove", moveCursor);
+      window.removeEventListener("pointerleave", hideCursor);
+      window.removeEventListener("blur", hideCursor);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={cursorRef}
+      aria-hidden
+      className="pointer-events-none fixed left-0 top-0 z-[80] hidden h-[34px] w-[34px] rounded-full bg-white opacity-0 mix-blend-difference transition-opacity duration-200 will-change-transform md:block"
+    />
   );
 }
 
