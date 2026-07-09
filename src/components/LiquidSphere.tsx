@@ -11,14 +11,14 @@ const noise = (x: number, y: number, z: number, t: number) => {
   return (a + b + c) / 3;
 };
 
-// Full-viewport teal backdrop so the transmission material samples the
-// hero's teal colour instead of the transparent (black) canvas clear.
+// Full-viewport rose backdrop so the transmission material samples the
+// hero's backdrop colour instead of the transparent (black) canvas clear.
 function TealBackdrop() {
   const { viewport } = useThree();
   return (
     <mesh position={[0, 0, -4]}>
       <planeGeometry args={[viewport.width * 4, viewport.height * 4]} />
-      <meshBasicMaterial color="#2D9B83" toneMapped={false} />
+      <meshBasicMaterial color="#E3738D" toneMapped={false} />
     </mesh>
   );
 }
@@ -203,7 +203,7 @@ function WaterBlob() {
 
       x += cursorX * cursorInfluence * 0.2;
       y += cursorY * cursorInfluence * 0.16;
-      z += cursorInfluence * 0.12;
+      z += cursorInfluence * 0.08;
 
       // Dumbbell / peanut deformation along X:
       // Squeeze the middle (small |x|) in Y and Z, and push lobes outward in X.
@@ -222,9 +222,13 @@ function WaterBlob() {
 
     if (groupRef.current) {
       const floatY = Math.sin(t * 0.5) * 0.08;
-      const targetX = cursorX * 0.32;
-      const targetY = cursorY * 0.22 + floatY;
-      const targetScale = 1 + cursorActivity * 0.04;
+      const targetX = cursorX * 0.22;
+      const targetY = cursorY * 0.16 + floatY;
+      const targetScaleX = 1.02 + cursorActivity * 0.045 + Math.abs(cursorX) * 0.018;
+      const targetScaleY = 1.02 + cursorActivity * 0.035 + Math.abs(cursorY) * 0.014;
+      const targetScaleZ = 0.99 + cursorActivity * 0.015;
+      const targetRotY = cursorX * 0.025;
+      const targetRotX = -cursorY * 0.025 + Math.sin(t * 0.35) * 0.01;
 
       groupRef.current.position.x = THREE.MathUtils.lerp(
         groupRef.current.position.x,
@@ -236,11 +240,19 @@ function WaterBlob() {
         targetY,
         0.065,
       );
-      groupRef.current.rotation.y = t * 0.28 + cursorX * 0.12;
-      groupRef.current.rotation.x = Math.sin(t * 0.4) * 0.2 - cursorY * 0.1;
-      groupRef.current.scale.setScalar(
-        THREE.MathUtils.lerp(groupRef.current.scale.x, targetScale, 0.08),
+      groupRef.current.rotation.y = THREE.MathUtils.lerp(
+        groupRef.current.rotation.y,
+        targetRotY,
+        0.08,
       );
+      groupRef.current.rotation.x = THREE.MathUtils.lerp(
+        groupRef.current.rotation.x,
+        targetRotX,
+        0.08,
+      );
+      groupRef.current.scale.x = THREE.MathUtils.lerp(groupRef.current.scale.x, targetScaleX, 0.08);
+      groupRef.current.scale.y = THREE.MathUtils.lerp(groupRef.current.scale.y, targetScaleY, 0.08);
+      groupRef.current.scale.z = THREE.MathUtils.lerp(groupRef.current.scale.z, targetScaleZ, 0.08);
     }
   });
 
@@ -282,7 +294,7 @@ function WaterBlob() {
           clearcoat={0}
           clearcoatRoughness={1}
           attenuationDistance={12}
-          attenuationColor="#e8fff8"
+          attenuationColor="#fff2f6"
           color="#ffffff"
           reflectivity={0}
           metalness={0}
