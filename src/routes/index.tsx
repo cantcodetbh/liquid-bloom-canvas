@@ -375,13 +375,51 @@ function Work() {
 
   useEffect(() => {
     const workSection = workSectionRef.current;
-    if (!workSection) return;
+    const scrollContainer = workSection?.parentElement;
+    if (!workSection || !scrollContainer) return;
 
-    const handleWorkWheel = (event: globalThis.WheelEvent) => {
+    const pinToWork = (behavior: ScrollBehavior = "auto") => {
+      scrollContainer.scrollTo({ top: workSection.offsetTop, behavior });
+    };
+
+    const preventWheel = (event: globalThis.WheelEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+
+    const handlePortfolioWheel = (event: globalThis.WheelEvent) => {
       if (Math.abs(event.deltaY) < 10) return;
 
       const direction = event.deltaY > 0 ? 1 : -1;
+      const workTop = workSection.offsetTop;
+      const footerTop = workTop + workSection.offsetHeight;
+      const scrollTop = scrollContainer.scrollTop;
       const currentIndex = activeProjectIndexRef.current;
+      const aboveWork = scrollTop < workTop - 8;
+      const belowWork = scrollTop >= footerTop - 8;
+      const insideWork = scrollTop >= workTop - 8 && scrollTop < footerTop - 8;
+      const now = Date.now();
+
+      if (direction > 0 && aboveWork) {
+        preventWheel(event);
+        activeProjectIndexRef.current = null;
+        setActiveProjectIndex(null);
+        pinToWork("smooth");
+        wheelLockRef.current = now;
+        return;
+      }
+
+      if (direction < 0 && belowWork) {
+        preventWheel(event);
+        activeProjectIndexRef.current = projects.length - 1;
+        setActiveProjectIndex(projects.length - 1);
+        pinToWork("smooth");
+        wheelLockRef.current = now;
+        return;
+      }
+
+      if (!insideWork) return;
+
       let nextIndex: number | null | undefined;
 
       if (direction > 0) {
@@ -396,10 +434,9 @@ function Work() {
 
       if (nextIndex === undefined) return;
 
-      event.preventDefault();
-      event.stopPropagation();
+      preventWheel(event);
+      pinToWork();
 
-      const now = Date.now();
       if (now - wheelLockRef.current < WHEEL_STEP_LOCK_MS) return;
 
       wheelLockRef.current = now;
@@ -407,10 +444,13 @@ function Work() {
       setActiveProjectIndex(nextIndex);
     };
 
-    workSection.addEventListener("wheel", handleWorkWheel, { passive: false });
+    scrollContainer.addEventListener("wheel", handlePortfolioWheel, {
+      capture: true,
+      passive: false,
+    });
 
     return () => {
-      workSection.removeEventListener("wheel", handleWorkWheel);
+      scrollContainer.removeEventListener("wheel", handlePortfolioWheel, true);
     };
   }, []);
 
