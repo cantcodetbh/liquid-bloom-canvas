@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useRef, type WheelEvent } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
 
 const LiquidSphere = lazy(() =>
@@ -169,34 +169,53 @@ function Header() {
 }
 
 function Hero() {
+  const heroRef = useRef<HTMLElement | null>(null);
   const heroExitLockedRef = useRef(false);
 
-  const handleHeroWheel = (event: WheelEvent<HTMLElement>) => {
-    if (event.ctrlKey || event.deltaY <= 18 || heroExitLockedRef.current) return;
+  useEffect(() => {
+    let unlockTimer: number | undefined;
 
-    const work = document.getElementById("work");
-    if (!work) return;
+    const handleWindowWheel = (event: globalThis.WheelEvent) => {
+      if (event.ctrlKey || event.deltaY <= 8 || heroExitLockedRef.current) return;
+      if (Math.abs(event.deltaX) > Math.abs(event.deltaY) * 1.25) return;
 
-    const heroRect = event.currentTarget.getBoundingClientRect();
-    const stillInHero = heroRect.bottom > window.innerHeight * 0.45;
-    const heroHasNotMostlyPassed = heroRect.top > -window.innerHeight * 0.35;
+      const hero = heroRef.current;
+      const work = document.getElementById("work");
+      if (!hero || !work) return;
 
-    if (!stillInHero || !heroHasNotMostlyPassed) return;
+      const heroRect = hero.getBoundingClientRect();
+      const workRect = work.getBoundingClientRect();
+      const heroStillDominatesViewport = heroRect.bottom > window.innerHeight * 0.42;
+      const heroHasNotMostlyPassed = heroRect.top > -window.innerHeight * 0.45;
+      const workIsNotAlreadyArriving = workRect.top > window.innerHeight * 0.18;
 
-    event.preventDefault();
-    event.stopPropagation();
+      if (!heroStillDominatesViewport || !heroHasNotMostlyPassed || !workIsNotAlreadyArriving) return;
 
-    heroExitLockedRef.current = true;
-    work.scrollIntoView({ behavior: "smooth", block: "start" });
+      event.preventDefault();
+      event.stopPropagation();
 
-    window.setTimeout(() => {
-      heroExitLockedRef.current = false;
-    }, 950);
-  };
+      heroExitLockedRef.current = true;
+      window.scrollTo({
+        top: window.scrollY + workRect.top,
+        behavior: "smooth",
+      });
+
+      unlockTimer = window.setTimeout(() => {
+        heroExitLockedRef.current = false;
+      }, 950);
+    };
+
+    window.addEventListener("wheel", handleWindowWheel, { passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", handleWindowWheel);
+      if (unlockTimer) window.clearTimeout(unlockTimer);
+    };
+  }, []);
 
   return (
     <section
-      onWheelCapture={handleHeroWheel}
+      ref={heroRef}
       className="relative z-20 isolate flex min-h-[82vh] flex-col justify-between overflow-visible px-6 pb-14 pt-2 md:px-10 md:pb-20"
     >
       {/* Canvas: 3D "nodeyard" wordmark refracted through the transparent sphere */}
@@ -240,7 +259,7 @@ function Hero() {
 
 function Work() {
   return (
-    <section id="work" className="relative z-10 flex w-full flex-col">
+    <section id="work" className="relative z-10 flex min-h-screen w-full flex-col scroll-mt-0">
       <div className="flex items-end justify-between border-t border-[#F6F0E6]/20 px-6 py-6 md:px-10">
         <div className="text-eyebrow">Selected work · 05</div>
         <div className="text-eyebrow hidden md:block">
@@ -249,7 +268,7 @@ function Work() {
       </div>
 
       {/* Slice strip */}
-      <div className="flex min-h-[560px] w-full border-t border-[#F6F0E6]/20 md:min-h-[640px]">
+      <div className="flex h-[calc(100svh-73px)] min-h-[520px] w-full border-t border-[#F6F0E6]/20 md:min-h-[580px]">
         {projects.map((p) => (
           <Slice key={p.index} project={p} />
         ))}
@@ -275,14 +294,14 @@ function Slice({ project: p }: { project: Project }) {
       </div>
 
       {/* Rotated title (collapsed state) */}
-      <div className="absolute left-1/2 top-20 -translate-x-1/2 transition-all duration-700 group-hover:left-10 group-hover:top-16 group-hover:translate-x-0">
+      <div className="absolute left-1/2 top-20 -translate-x-1/2 transition-all duration-700 group-hover:left-10 group-hover:top-14 group-hover:translate-x-0 md:group-hover:top-16">
         <h3 className="text-wordmark origin-left rotate-90 whitespace-nowrap text-3xl transition-all duration-700 group-hover:rotate-0 group-hover:text-5xl md:group-hover:text-6xl">
           {p.title}
         </h3>
       </div>
 
       {/* Expanded detail */}
-      <div className="pointer-events-none flex h-full flex-col justify-end p-10 pt-40 opacity-0 transition-opacity duration-500 delay-200 group-hover:pointer-events-auto group-hover:opacity-100 md:p-12 md:pt-48">
+      <div className="pointer-events-none flex h-full flex-col justify-center overflow-y-auto p-6 pt-28 opacity-0 transition-opacity duration-500 delay-200 group-hover:pointer-events-auto group-hover:opacity-100 md:p-10 md:pt-32">
         <span className={`text-eyebrow mb-4 ${p.accent}`}>
           {p.index} / {p.kind}
         </span>
