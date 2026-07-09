@@ -267,7 +267,7 @@ function Header() {
       >
         nodeyard
       </a>
-      <nav className="text-eyebrow relative z-10 flex items-center gap-8">
+      <nav className="text-eyebrow relative z-10 flex items-center gap-[calc(var(--space-inline)*4)]">
         <a href="#work" className={roseHoverLink}>
           Work
         </a>
@@ -310,7 +310,7 @@ function HeroGrainField() {
 
 function Hero() {
   return (
-    <section className="relative z-20 isolate flex min-h-[calc(100svh-76px)] flex-col justify-between overflow-visible px-6 pb-14 pt-2 md:px-10 md:pb-20">
+    <section className="relative z-20 isolate flex min-h-[calc(100svh-76px)] flex-col justify-between overflow-visible px-6 pb-[var(--space-section)] pt-2 md:px-10">
       {/* Canvas: 3D "nodeyard" wordmark refracted through the transparent sphere */}
       <div className="pointer-events-none absolute inset-x-0 -top-24 -bottom-32 z-20 flex items-center justify-center overflow-visible">
         <div
@@ -326,14 +326,14 @@ function Hero() {
       <HeroGrainField />
 
       {/* Top-left eyebrow */}
-      <div className="text-eyebrow relative z-30 flex items-center gap-3 pt-6">
+      <div className="text-eyebrow relative z-30 flex items-center gap-[var(--space-inline)] pt-[var(--space-kicker-title)]">
         <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#E3738D]" />
         Portfolio · MMXXVI · v03
       </div>
 
       {/* Intro + CTA */}
-      <div className="relative z-30 flex w-full max-w-md flex-col items-start gap-5">
-        <p className="font-mono text-sm leading-relaxed text-[#F6F0E6]/85 md:text-base">
+      <div className="type-stack-action relative z-30 w-full max-w-[var(--measure-copy)]">
+        <p className="text-copy text-[#F6F0E6]/85">
           <span className="text-[#E3738D]">[00]</span> Small, opinionated
           software by <span className="text-[#F6F0E6]">nodeyard</span> — network
           tooling, macOS companions, film emulation, Linux shells, colour
@@ -342,7 +342,7 @@ function Hero() {
         </p>
         <a
           href="#work"
-          className="text-eyebrow group inline-flex items-center gap-3 self-start rounded-full border-2 border-[#F6F0E6]/40 px-5 py-3 transition-[border-color,color,font-weight] duration-200 hover:border-[#E3738D] hover:font-bold hover:text-[#E3738D]"
+          className="text-eyebrow group inline-flex items-center gap-[var(--space-inline)] self-start rounded-full border-2 border-[#F6F0E6]/40 px-5 py-3 transition-[border-color,color,font-weight] duration-200 hover:border-[#E3738D] hover:font-bold hover:text-[#E3738D]"
         >
           Enter the yard
           <ArrowUpRight className="h-4 w-4 [stroke-width:1.75] transition-[stroke-width,transform] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:[stroke-width:3]" />
@@ -361,7 +361,7 @@ function Work() {
 
   return (
     <section id="work" className="relative z-10 flex w-full snap-start snap-always scroll-mt-0 flex-col">
-      <div className="relative isolate flex items-end justify-between overflow-hidden border-t border-[#F6F0E6]/20 px-6 py-6 md:px-10">
+      <div className="relative isolate flex items-end justify-between gap-[var(--space-body-action)] overflow-hidden border-t border-[#F6F0E6]/20 px-6 py-[var(--space-body-action)] md:px-10">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 z-0"
@@ -425,7 +425,7 @@ function Slice({ project: p }: { project: Project }) {
       </div>
 
       {/* Rotated title (collapsed state) */}
-      <div className="absolute left-1/2 top-20 -translate-x-1/2 transition-all duration-700 group-hover:left-10 group-hover:top-14 group-hover:translate-x-0 md:group-hover:top-16">
+      <div className="absolute left-1/2 top-20 -translate-x-1/2 transition-all duration-700 group-hover:left-10 group-hover:top-[calc(var(--space-section)*1.4)] group-hover:translate-x-0 md:group-hover:top-[calc(var(--space-section)*1.55)]">
         <h3 className="text-wordmark origin-left rotate-90 whitespace-nowrap text-3xl transition-all duration-700 group-hover:rotate-0 group-hover:text-5xl md:group-hover:text-6xl">
           {p.title}
         </h3>
@@ -433,13 +433,15 @@ function Slice({ project: p }: { project: Project }) {
 
       {/* Expanded detail */}
       <div className="pointer-events-none flex h-full flex-col justify-center overflow-y-auto p-6 pt-28 opacity-0 transition-opacity duration-500 delay-200 group-hover:pointer-events-auto group-hover:opacity-100 md:p-10 md:pt-32">
-        <span className={`text-eyebrow mb-4 ${p.accent}`}>
-          {p.index} / {p.kind}
-        </span>
-        <p className="mb-6 max-w-md text-lg font-medium leading-snug md:text-xl">
-          {p.description}
-        </p>
-        <div className="mb-8 flex flex-wrap gap-2">
+        <div className="type-stack max-w-[var(--measure-project)]">
+          <span className={`text-eyebrow ${p.accent}`}>
+            {p.index} / {p.kind}
+          </span>
+          <p className="text-project-copy font-medium">
+            {p.description}
+          </p>
+        </div>
+        <div className="type-chip-row mt-[var(--space-copy-list)]">
           {p.tags.map((t) => (
             <span
               key={t}
@@ -449,7 +451,7 @@ function Slice({ project: p }: { project: Project }) {
             </span>
           ))}
         </div>
-        <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest">
+        <div className="type-action-row mt-[var(--space-body-action)] font-mono text-xs uppercase tracking-widest">
           <span>{p.cta}</span>
           <span className={`h-px w-10 ${p.fg === "text-[#F6F0E6]" ? "bg-[#F6F0E6]" : "bg-[#2E0A17]"} transition-all duration-500 group-hover:w-20`} />
           <ArrowUpRight className="h-4 w-4" />
@@ -473,16 +475,16 @@ function Footer() {
         style={footerNoiseTexture}
       />
 
-      <div className="relative z-10 flex min-h-screen flex-col items-start justify-between gap-10 px-6 py-16 md:flex-row md:items-end md:px-10">
-        <div>
-          <div className="text-eyebrow mb-4 text-[#E3738D]">
+      <div className="relative z-10 flex min-h-screen flex-col items-start justify-between gap-[var(--space-section)] px-6 py-[calc(var(--space-section)*1.5)] md:flex-row md:items-end md:px-10">
+        <div className="type-stack">
+          <div className="text-eyebrow text-[#E3738D]">
             Hosted from nodeyard
           </div>
           <div className="text-wordmark text-6xl md:text-9xl chromatic-shadow">
             nodeyard
           </div>
         </div>
-        <div className="flex flex-col gap-2 font-mono text-xs uppercase tracking-widest text-[#F6F0E6]/80">
+        <div className="flex flex-col gap-[var(--space-inline)] font-mono text-xs uppercase tracking-widest text-[#F6F0E6]/80">
           <a
             href="https://github.com/cantcodetbh"
             target="_blank"
@@ -499,7 +501,7 @@ function Footer() {
           >
             palette.nodeyard.co.uk ↗
           </a>
-          <span className="opacity-60">
+          <span className="pt-[var(--space-inline)] opacity-60">
             © {new Date().getFullYear()} nodeyard · Manchester
           </span>
         </div>
