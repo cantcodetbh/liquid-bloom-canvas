@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { MeshTransmissionMaterial } from "@react-three/drei";
-import { Suspense, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 // Cheap smooth noise for organic vertex displacement
@@ -26,26 +26,71 @@ function TealBackdrop() {
 // Wordmark plane rendered in-scene so MeshTransmissionMaterial refracts it.
 function BackgroundWordmark() {
   const { viewport } = useThree();
+  const [fontsReady, setFontsReady] = useState(false);
+
+  useEffect(() => {
+    if (typeof document === "undefined" || !("fonts" in document)) {
+      setFontsReady(true);
+      return;
+    }
+
+    let cancelled = false;
+    document.fonts.ready.then(() => {
+      if (!cancelled) setFontsReady(true);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const texture = useMemo(() => {
+    const text = "nodeyard";
     const c = document.createElement("canvas");
     c.width = 4096;
     c.height = 1024;
+
     const ctx = c.getContext("2d")!;
+    const horizontalPadding = c.width * 0.008;
+    const maxTextWidth = c.width - horizontalPadding * 2;
+
     ctx.clearRect(0, 0, c.width, c.height);
     ctx.fillStyle = "#F6F0E6";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.font =
-      "800 900px 'Inter Tight', ui-sans-serif, system-ui, sans-serif";
-    ctx.fillText("nodeyard", c.width / 2, c.height / 2 + 30);
+
+    let fontSize = 920;
+    const setFont = () => {
+      ctx.font = `${fontSize}px 'Inter Tight', ui-sans-serif, system-ui, sans-serif`;
+    };
+
+    setFont();
+
+    while (ctx.measureText(text).width < maxTextWidth && fontSize < 1280) {
+      fontSize += 8;
+      setFont();
+    }
+
+    while (ctx.measureText(text).width > maxTextWidth && fontSize > 120) {
+      fontSize -= 4;
+      setFont();
+    }
+
+    ctx.fillText(text, c.width / 2, c.height / 2 + 28);
+
     const tex = new THREE.CanvasTexture(c);
     tex.anisotropy = 16;
     tex.needsUpdate = true;
     return tex;
-  }, []);
+  }, [fontsReady]);
 
-  // Fit wordmark to ~98% of viewport width, keeping the 4:1 texture ratio.
-  const width = viewport.width * 0.98;
+  useEffect(() => {
+    return () => texture.dispose();
+  }, [texture]);
+
+  // The generated texture fits the text to the canvas, then this plane pushes
+  // it to just shy of the viewport edges behind the liquid sphere.
+  const width = viewport.width * 1.01;
   const height = width / 4;
 
   return (
