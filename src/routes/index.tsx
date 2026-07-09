@@ -46,7 +46,7 @@ const buildGrainSvg = (colour: string) =>
     `<svg xmlns="http://www.w3.org/2000/svg" width="260" height="260" viewBox="0 0 260 260"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="1.28" numOctaves="3" seed="9" stitchTiles="stitch" result="noise"/><feColorMatrix in="noise" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4.4 -2.05" result="specks"/><feComposite in="SourceGraphic" in2="specks" operator="in"/></filter><rect width="260" height="260" fill="${colour}" filter="url(#grain)"/></svg>`,
   );
 
-const HERO_GRAIN = "rgba(15, 84, 70, 0.62)";
+const HERO_GRAIN = "rgba(6, 54, 45, 0.84)";
 const FOOTER_GRAIN = "rgba(246, 240, 230, 0.18)";
 
 const projects: Project[] = [
@@ -292,7 +292,7 @@ function Header() {
 function HeroGrainField() {
   const heroNoiseTexture = grainTexture(
     HERO_GRAIN,
-    "linear-gradient(to bottom, rgba(0,0,0,0.34) 0%, rgba(0,0,0,0.22) 14%, rgba(0,0,0,0.18) 30%, rgba(0,0,0,0.18) 70%, rgba(0,0,0,0.22) 86%, rgba(0,0,0,0.34) 100%)",
+    "linear-gradient(to bottom, rgba(0,0,0,0.58) 0%, rgba(0,0,0,0.4) 14%, rgba(0,0,0,0.26) 32%, rgba(0,0,0,0.26) 68%, rgba(0,0,0,0.4) 86%, rgba(0,0,0,0.58) 100%)",
     "left top, 0 0, 3px 5px",
   );
 
