@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { MeshTransmissionMaterial } from "@react-three/drei";
 import { Suspense, useMemo, useRef } from "react";
 import * as THREE from "three";
@@ -11,8 +11,21 @@ const noise = (x: number, y: number, z: number, t: number) => {
   return (a + b + c) / 3;
 };
 
+// Full-viewport teal backdrop so the transmission material samples the
+// hero's teal colour instead of the transparent (black) canvas clear.
+function TealBackdrop() {
+  const { viewport } = useThree();
+  return (
+    <mesh position={[0, 0, -4]}>
+      <planeGeometry args={[viewport.width * 4, viewport.height * 4]} />
+      <meshBasicMaterial color="#2D9B83" toneMapped={false} />
+    </mesh>
+  );
+}
+
 // Wordmark plane rendered in-scene so MeshTransmissionMaterial refracts it.
 function BackgroundWordmark() {
+  const { viewport } = useThree();
   const texture = useMemo(() => {
     const c = document.createElement("canvas");
     c.width = 4096;
@@ -23,35 +36,32 @@ function BackgroundWordmark() {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font =
-      "800 780px 'Inter Tight', ui-sans-serif, system-ui, sans-serif";
-    ctx.fillText("nodeyard", c.width / 2, c.height / 2 + 30);
+      "800 620px 'Inter Tight', ui-sans-serif, system-ui, sans-serif";
+    ctx.fillText("nodeyard", c.width / 2, c.height / 2 + 20);
     const tex = new THREE.CanvasTexture(c);
     tex.anisotropy = 16;
     tex.needsUpdate = true;
     return tex;
   }, []);
 
+  // Fit wordmark to ~92% of viewport width, keeping the 4:1 texture ratio.
+  const width = Math.min(viewport.width * 0.92, 14);
+  const height = width / 4;
+
   return (
     <mesh position={[0, 0, -2]}>
-      <planeGeometry args={[22, 5.5]} />
+      <planeGeometry args={[width, height]} />
       <meshBasicMaterial map={texture} transparent toneMapped={false} />
     </mesh>
   );
 }
 
-type BlobProps = {
-  radius: number;
-  offsetPhase: number;
-  seed: number;
-  positionFn: (t: number) => [number, number, number];
-  stretchFn?: (t: number) => [number, number, number];
-};
-
-function WaterBlob({ radius, offsetPhase, seed, positionFn, stretchFn }: BlobProps) {
+function WaterBlob() {
   const meshRef = useRef<THREE.Mesh>(null);
+  const radius = 1.05;
   const geometry = useMemo(
-    () => new THREE.IcosahedronGeometry(radius, 48),
-    [radius],
+    () => new THREE.IcosahedronGeometry(radius, 64),
+    [],
   );
   const original = useMemo(() => {
     const pos = geometry.attributes.position.array as Float32Array;
@@ -59,111 +69,75 @@ function WaterBlob({ radius, offsetPhase, seed, positionFn, stretchFn }: BlobPro
   }, [geometry]);
 
   useFrame((state) => {
-    const t = state.clock.getElapsedTime() * 0.3 + offsetPhase;
+    const t = state.clock.getElapsedTime() * 0.35;
     const pos = geometry.attributes.position.array as Float32Array;
 
-    const partner = positionFn(t);
-    const other = positionFn(t + Math.PI);
-    const dx = other[0] - partner[0];
-    const dist = Math.hypot(dx, other[1] - partner[1]);
-    const merge = Math.max(0, 1 - dist / 1.6);
+    // "Necking" cycle 0..1..0 — at peak the blob pinches in the middle and
+    // stretches outward, looking like it's about to split into two, then
+    // eases back into a single sphere.
+    const neck = (1 - Math.cos(t * 0.6)) * 0.5; // 0..1
 
     for (let i = 0; i < pos.length; i += 3) {
       const ox = original[i];
       const oy = original[i + 1];
       const oz = original[i + 2];
 
-      const n1 = noise(ox * 1.6 + seed, oy * 1.6, oz * 1.6, t);
-      const n2 = noise(ox * 3.4 + seed * 2, oy * 3.4, oz * 3.4, t * 1.4);
-      const disp = 1 + n1 * 0.22 + n2 * 0.11;
+      // Organic wobble
+      const n1 = noise(ox * 1.6, oy * 1.6, oz * 1.6, t);
+      const n2 = noise(ox * 3.2, oy * 3.2, oz * 3.2, t * 1.5);
+      const disp = 1 + n1 * 0.14 + n2 * 0.07;
 
-      const pullDir = Math.sign(-dx || 1);
-      const pull =
-        merge * 0.4 * (ox * pullDir > 0 ? 1 : 0) * (Math.abs(ox) / radius);
+      let x = ox * disp;
+      let y = oy * disp;
+      let z = oz * disp;
 
-      pos[i] = ox * disp + pull * pullDir;
-      pos[i + 1] = oy * disp;
-      pos[i + 2] = oz * disp;
+      // Dumbbell / peanut deformation along X:
+      // Squeeze the middle (small |x|) in Y and Z, and push lobes outward in X.
+      const nx = ox / radius; // -1..1
+      const pinch = 1 - neck * 0.55 * (1 - nx * nx); // stronger at centre
+      y *= pinch;
+      z *= pinch;
+      x += Math.sign(nx || 1) * neck * 0.35 * Math.abs(nx);
+
+      pos[i] = x;
+      pos[i + 1] = y;
+      pos[i + 2] = z;
     }
     geometry.attributes.position.needsUpdate = true;
     geometry.computeVertexNormals();
 
     if (meshRef.current) {
-      const p = positionFn(t);
-      meshRef.current.position.set(p[0], p[1], p[2]);
-      meshRef.current.rotation.y = t * 0.2;
-      meshRef.current.rotation.x = Math.sin(t * 0.3) * 0.15;
-      if (stretchFn) {
-        const s = stretchFn(t);
-        meshRef.current.scale.set(s[0], s[1], s[2]);
-      }
+      meshRef.current.rotation.y = t * 0.25;
+      meshRef.current.rotation.x = Math.sin(t * 0.4) * 0.18;
+      meshRef.current.position.y = Math.sin(t * 0.5) * 0.08;
     }
   });
 
   return (
     <mesh ref={meshRef} geometry={geometry}>
-      {/* Pure water: no reflections, no clearcoat, mostly transparent,
-          heavy chromatic dispersion so the wordmark bends through it. */}
       <MeshTransmissionMaterial
-        samples={10}
+        samples={12}
         resolution={1024}
         transmission={1}
         roughness={0}
-        thickness={0.6}
+        thickness={0.5}
         ior={1.33}
-        chromaticAberration={1.6}
+        chromaticAberration={1.4}
         anisotropy={0}
-        distortion={0.25}
-        distortionScale={0.4}
-        temporalDistortion={0.05}
+        distortion={0.35}
+        distortionScale={0.5}
+        temporalDistortion={0.08}
         backside
-        backsideThickness={0.3}
+        backsideThickness={0.25}
         clearcoat={0}
         clearcoatRoughness={1}
-        attenuationDistance={10}
-        attenuationColor="#ffffff"
+        attenuationDistance={12}
+        attenuationColor="#e8fff8"
         color="#ffffff"
         reflectivity={0}
         metalness={0}
       />
     </mesh>
-  );
-}
-
-function Water() {
-  const positionA = (t: number): [number, number, number] => {
-    const sep = (1 - Math.cos(t * 0.5)) * 0.75;
-    const bobY = Math.sin(t * 0.7) * 0.12;
-    return [-sep, bobY, 0];
-  };
-  const positionB = (t: number): [number, number, number] => {
-    const sep = (1 - Math.cos(t * 0.5)) * 0.75;
-    const bobY = Math.cos(t * 0.6) * 0.1;
-    return [sep, -bobY, 0];
-  };
-  const stretchA = (t: number): [number, number, number] => {
-    const sep = (1 - Math.cos(t * 0.5)) * 0.75;
-    const merge = Math.max(0, 1 - sep / 0.9);
-    return [1 + merge * 0.28, 1 - merge * 0.12, 1 - merge * 0.06];
-  };
-
-  return (
-    <>
-      <WaterBlob
-        radius={0.9}
-        offsetPhase={0}
-        seed={0}
-        positionFn={positionA}
-        stretchFn={stretchA}
-      />
-      <WaterBlob
-        radius={0.82}
-        offsetPhase={Math.PI * 0.5}
-        seed={11}
-        positionFn={positionB}
-        stretchFn={stretchA}
-      />
-    </>
   );
 }
 
@@ -175,13 +149,11 @@ export function LiquidSphere() {
       gl={{ antialias: true, alpha: true }}
       style={{ background: "transparent" }}
     >
-      {/* Flat ambient only — no directional highlights, no environment,
-          so the material shows refraction of the wordmark rather than
-          reflecting studio lights (which read as chrome/pearl). */}
-      <ambientLight intensity={1} />
+      <ambientLight intensity={1.2} />
       <Suspense fallback={null}>
+        <TealBackdrop />
         <BackgroundWordmark />
-        <Water />
+        <WaterBlob />
       </Suspense>
     </Canvas>
   );
