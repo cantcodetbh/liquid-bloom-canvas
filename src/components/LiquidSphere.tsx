@@ -25,7 +25,7 @@ function TealBackdrop() {
 
 // Wordmark plane rendered in-scene so MeshTransmissionMaterial refracts it.
 function BackgroundWordmark() {
-  const { viewport } = useThree();
+  const { camera, viewport } = useThree();
   const [fontsReady, setFontsReady] = useState(false);
 
   useEffect(() => {
@@ -51,7 +51,7 @@ function BackgroundWordmark() {
     c.height = 1024;
 
     const ctx = c.getContext("2d")!;
-    const horizontalPadding = c.width * 0.008;
+    const horizontalPadding = c.width * 0.002;
     const maxTextWidth = c.width - horizontalPadding * 2;
 
     ctx.clearRect(0, 0, c.width, c.height);
@@ -61,7 +61,7 @@ function BackgroundWordmark() {
 
     let fontSize = 920;
     const setFont = () => {
-      ctx.font = `${fontSize}px 'Inter Tight', ui-sans-serif, system-ui, sans-serif`;
+      ctx.font = `800 ${fontSize}px 'Inter Tight', ui-sans-serif, system-ui, sans-serif`;
     };
 
     setFont();
@@ -88,13 +88,19 @@ function BackgroundWordmark() {
     return () => texture.dispose();
   }, [texture]);
 
-  // The generated texture fits the text to the canvas, then this plane pushes
-  // it to just shy of the viewport edges behind the liquid sphere.
-  const width = viewport.width * 1.01;
+  const wordmarkZ = -2;
+  const cameraZ = Math.max(camera.position.z, 0.001);
+  const perspectiveCompensation = (cameraZ - wordmarkZ) / cameraZ;
+  const edgeBleed = 1.025;
+
+  // viewport.width is measured around z=0. Because this plane sits behind the
+  // sphere at z=-2, compensate for perspective so the rendered wordmark reaches
+  // the screen edges rather than shrinking in the distance.
+  const width = viewport.width * perspectiveCompensation * edgeBleed;
   const height = width / 4;
 
   return (
-    <mesh position={[0, 0, -2]}>
+    <mesh position={[0, 0, wordmarkZ]}>
       <planeGeometry args={[width, height]} />
       <meshBasicMaterial map={texture} transparent toneMapped={false} />
     </mesh>
