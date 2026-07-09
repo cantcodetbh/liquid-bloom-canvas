@@ -13,13 +13,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Selected projects by nodeyard: network tooling, macOS companions, film emulation, custom Linux shells and colour tools.",
+          "A WebGL application that redesigns a portfolio website with liquid distortion and refraction effects.",
       },
       { property: "og:title", content: "nodeyard — refracted portfolio" },
       {
         property: "og:description",
         content:
-          "Selected projects by nodeyard: network tooling, macOS companions, film emulation, custom Linux shells and colour tools.",
+          "A WebGL application that redesigns a portfolio website with liquid distortion and refraction effects.",
       },
     ],
   }),

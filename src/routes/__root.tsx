@@ -81,17 +81,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Selected projects by nodeyard — small, opinionated software refracted through a liquid glass lens.",
+          "A WebGL application that redesigns a portfolio website with liquid distortion and refraction effects.",
       },
       { name: "author", content: "nodeyard" },
       { property: "og:title", content: "nodeyard — refracted portfolio" },
       {
         property: "og:description",
         content:
-          "Selected projects by nodeyard — small, opinionated software refracted through a liquid glass lens.",
+          "A WebGL application that redesigns a portfolio website with liquid distortion and refraction effects.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "nodeyard — refracted portfolio" },
+      { name: "twitter:description", content: "A WebGL application that redesigns a portfolio website with liquid distortion and refraction effects." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d377bfa8-d98e-411a-98be-207dc969fc6c/id-preview-761aec16--3d4bb01f-79d7-4ac6-b93a-1bc3028f8595.lovable.app-1783585326402.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d377bfa8-d98e-411a-98be-207dc969fc6c/id-preview-761aec16--3d4bb01f-79d7-4ac6-b93a-1bc3028f8595.lovable.app-1783585326402.png" },
     ],
     links: [
       {
