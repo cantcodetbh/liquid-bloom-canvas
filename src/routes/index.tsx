@@ -259,7 +259,7 @@ function Hero() {
 
 function Work() {
   return (
-    <section id="work" className="relative z-10 flex min-h-screen w-full flex-col scroll-mt-0">
+    <section id="work" className="relative z-10 flex w-full flex-col scroll-mt-0">
       <div className="flex items-end justify-between border-t border-[#F6F0E6]/20 px-6 py-6 md:px-10">
         <div className="text-eyebrow">Selected work · 05</div>
         <div className="text-eyebrow hidden md:block">
