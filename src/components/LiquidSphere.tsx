@@ -128,7 +128,9 @@ function BackgroundWordmark() {
 
 function WaterBlob() {
   const meshRef = useRef<THREE.Mesh>(null);
-  const radius = 1.32;
+  const cursorTargetRef = useRef(new THREE.Vector2(0, 0));
+  const cursorRef = useRef(new THREE.Vector2(0, 0));
+  const radius = 1.55;
   const geometry = useMemo(
     () => new THREE.IcosahedronGeometry(radius, 64),
     [],
@@ -138,9 +140,32 @@ function WaterBlob() {
     return new Float32Array(pos);
   }, [geometry]);
 
+  useEffect(() => {
+    const handlePointerMove = (event: PointerEvent) => {
+      const x = (event.clientX / window.innerWidth) * 2 - 1;
+      const y = -(event.clientY / window.innerHeight) * 2 + 1;
+      cursorTargetRef.current.set(x, y);
+    };
+
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+    };
+  }, []);
+
   useFrame((state) => {
     const t = state.clock.getElapsedTime() * 0.35;
     const pos = geometry.attributes.position.array as Float32Array;
+
+    cursorRef.current.lerp(cursorTargetRef.current, 0.075);
+    const cursorX = cursorRef.current.x;
+    const cursorY = cursorRef.current.y;
+    const cursorActivity = THREE.MathUtils.smoothstep(
+      Math.min(1, cursorRef.current.length()),
+      0.05,
+      0.9,
+    );
 
     // "Necking" cycle 0..1..0 — at peak the blob pinches in the middle and
     // stretches outward, looking like it's about to split into two, then
@@ -163,6 +188,23 @@ function WaterBlob() {
       let y = oy * disp;
       let z = oz * disp;
 
+      // Cursor tension: the area of the blob under the cursor gently stretches
+      // towards it, making the liquid feel pulled rather than simply dragged.
+      const localX = ox / radius;
+      const localY = oy / radius;
+      const cursorDistance = Math.hypot(
+        localX - cursorX * 0.72,
+        localY - cursorY * 0.54,
+      );
+      const cursorInfluence = Math.pow(
+        Math.max(0, 1 - cursorDistance / 0.9),
+        2,
+      ) * cursorActivity;
+
+      x += cursorX * cursorInfluence * 0.2;
+      y += cursorY * cursorInfluence * 0.16;
+      z += cursorInfluence * 0.12;
+
       // Dumbbell / peanut deformation along X:
       // Squeeze the middle (small |x|) in Y and Z, and push lobes outward in X.
       const nx = ox / radius; // -1..1
@@ -179,9 +221,26 @@ function WaterBlob() {
     geometry.computeVertexNormals();
 
     if (meshRef.current) {
-      meshRef.current.rotation.y = t * 0.28;
-      meshRef.current.rotation.x = Math.sin(t * 0.4) * 0.2;
-      meshRef.current.position.y = Math.sin(t * 0.5) * 0.08;
+      const floatY = Math.sin(t * 0.5) * 0.08;
+      const targetX = cursorX * 0.32;
+      const targetY = cursorY * 0.22 + floatY;
+      const targetScale = 1 + cursorActivity * 0.04;
+
+      meshRef.current.position.x = THREE.MathUtils.lerp(
+        meshRef.current.position.x,
+        targetX,
+        0.065,
+      );
+      meshRef.current.position.y = THREE.MathUtils.lerp(
+        meshRef.current.position.y,
+        targetY,
+        0.065,
+      );
+      meshRef.current.rotation.y = t * 0.28 + cursorX * 0.12;
+      meshRef.current.rotation.x = Math.sin(t * 0.4) * 0.2 - cursorY * 0.1;
+      meshRef.current.scale.setScalar(
+        THREE.MathUtils.lerp(meshRef.current.scale.x, targetScale, 0.08),
+      );
     }
   });
 
@@ -192,15 +251,15 @@ function WaterBlob() {
         resolution={1024}
         transmission={1}
         roughness={0}
-        thickness={0.62}
+        thickness={0.68}
         ior={1.33}
         chromaticAberration={1.12}
         anisotropy={0}
-        distortion={0.48}
-        distortionScale={0.72}
-        temporalDistortion={0.12}
+        distortion={0.52}
+        distortionScale={0.78}
+        temporalDistortion={0.14}
         backside
-        backsideThickness={0.3}
+        backsideThickness={0.34}
         clearcoat={0}
         clearcoatRoughness={1}
         attenuationDistance={12}
