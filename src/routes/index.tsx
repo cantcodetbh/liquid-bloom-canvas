@@ -52,7 +52,7 @@ const projects: Project[] = [
     cta: "Internal tool",
     bg: "bg-[#2E0A17]",
     fg: "text-[#F6F0E6]",
-    accent: "text-[#D9A73D]",
+    accent: "text-[#E3738D]",
     chipBorder: "border-[#F6F0E6]/25",
   },
   {
@@ -66,7 +66,7 @@ const projects: Project[] = [
     cta: "View project",
     bg: "bg-[#821C16]",
     fg: "text-[#F6F0E6]",
-    accent: "text-[#D9A73D]",
+    accent: "text-[#E3738D]",
     chipBorder: "border-[#F6F0E6]/25",
   },
   {
@@ -92,7 +92,7 @@ const projects: Project[] = [
     tags: ["Linux", "Quickshell", "Arch", "Hyprland"],
     href: "https://github.com/cantcodetbh/homeshell",
     cta: "View project",
-    bg: "bg-[#D9A73D]",
+    bg: "bg-[#E3738D]",
     fg: "text-[#2E0A17]",
     accent: "text-[#821C16]",
     chipBorder: "border-[#2E0A17]/30",
@@ -115,11 +115,11 @@ const projects: Project[] = [
 
 function Index() {
   return (
-    <div className="relative flex min-h-screen w-full flex-col overflow-hidden bg-[#2D9B83] text-[#F6F0E6]">
+    <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-[#2D9B83] text-[#F6F0E6]">
       {/* film grain */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 z-30 opacity-[0.06] mix-blend-overlay"
+        className="pointer-events-none fixed inset-0 z-50 opacity-[0.06] mix-blend-overlay"
         style={{
           backgroundImage:
             "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")",
@@ -144,14 +144,14 @@ function Header() {
         nodeyard
       </a>
       <nav className="text-eyebrow flex items-center gap-8">
-        <a href="#work" className="transition-colors hover:text-[#D9A73D]">
+        <a href="#work" className="transition-colors hover:text-[#E3738D]">
           Work
         </a>
         <a
           href="https://github.com/cantcodetbh"
           target="_blank"
           rel="noreferrer"
-          className="transition-colors hover:text-[#D9A73D]"
+          className="transition-colors hover:text-[#E3738D]"
         >
           GitHub
         </a>
@@ -159,7 +159,7 @@ function Header() {
           href="https://palette.nodeyard.co.uk/"
           target="_blank"
           rel="noreferrer"
-          className="hidden transition-colors hover:text-[#D9A73D] md:inline"
+          className="hidden transition-colors hover:text-[#E3738D] md:inline"
         >
           Palette
         </a>
@@ -170,12 +170,12 @@ function Header() {
 
 function Hero() {
   return (
-    <section className="relative z-10 flex min-h-[82vh] flex-col justify-between px-6 pb-14 pt-2 md:px-10 md:pb-20">
+    <section className="relative z-20 isolate flex min-h-[82vh] flex-col justify-between overflow-visible px-6 pb-14 pt-2 md:px-10 md:pb-20">
       {/* Canvas: 3D "nodeyard" wordmark refracted through the transparent sphere */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+      <div className="pointer-events-none absolute inset-x-0 -top-24 -bottom-32 z-20 flex items-center justify-center overflow-visible">
         <div
           className="relative"
-          style={{ width: "100vw", height: "min(680px, 70vh)" }}
+          style={{ width: "100vw", height: "min(820px, 86vh)" }}
         >
           <Suspense fallback={null}>
             <LiquidSphere />
@@ -183,17 +183,16 @@ function Hero() {
         </div>
       </div>
 
-
       {/* Top-left eyebrow */}
-      <div className="text-eyebrow relative z-10 flex items-center gap-3 pt-6">
-        <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#D9A73D]" />
+      <div className="text-eyebrow relative z-30 flex items-center gap-3 pt-6">
+        <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#E3738D]" />
         Portfolio · MMXXVI · v03
       </div>
 
       {/* Bottom row: intro + CTA */}
-      <div className="relative z-10 grid w-full max-w-6xl gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+      <div className="relative z-30 grid w-full max-w-6xl gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
         <p className="max-w-md font-mono text-sm leading-relaxed text-[#F6F0E6]/85 md:text-base">
-          <span className="text-[#D9A73D]">[00]</span> Small, opinionated
+          <span className="text-[#E3738D]">[00]</span> Small, opinionated
           software by <span className="text-[#F6F0E6]">nodeyard</span> — network
           tooling, macOS companions, film emulation, Linux shells, colour
           tools. Built quietly, refracted through whatever the current
@@ -201,7 +200,7 @@ function Hero() {
         </p>
         <a
           href="#work"
-          className="text-eyebrow group inline-flex items-center gap-3 self-start rounded-full border border-[#F6F0E6]/40 px-5 py-3 transition-colors hover:border-[#D9A73D] hover:text-[#D9A73D] md:self-auto"
+          className="text-eyebrow group inline-flex items-center gap-3 self-start rounded-full border border-[#F6F0E6]/40 px-5 py-3 transition-colors hover:border-[#E3738D] hover:text-[#E3738D] md:self-auto"
         >
           Enter the yard
           <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -293,7 +292,7 @@ function Footer() {
     <footer className="relative z-10 border-t border-[#F6F0E6]/20 bg-[#0f0308]">
       <div className="flex flex-col items-start justify-between gap-10 px-6 py-16 md:flex-row md:items-end md:px-10">
         <div>
-          <div className="text-eyebrow mb-4 text-[#D9A73D]">
+          <div className="text-eyebrow mb-4 text-[#E3738D]">
             Hosted from nodeyard
           </div>
           <div className="text-wordmark text-6xl md:text-9xl chromatic-shadow">
@@ -305,7 +304,7 @@ function Footer() {
             href="https://github.com/cantcodetbh"
             target="_blank"
             rel="noreferrer"
-            className="transition-colors hover:text-[#D9A73D]"
+            className="transition-colors hover:text-[#E3738D]"
           >
             github/cantcodetbh ↗
           </a>
@@ -313,7 +312,7 @@ function Footer() {
             href="https://palette.nodeyard.co.uk/"
             target="_blank"
             rel="noreferrer"
-            className="transition-colors hover:text-[#D9A73D]"
+            className="transition-colors hover:text-[#E3738D]"
           >
             palette.nodeyard.co.uk ↗
           </a>
