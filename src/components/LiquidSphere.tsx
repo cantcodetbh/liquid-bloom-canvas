@@ -76,7 +76,7 @@ function BackgroundWordmark() {
     }
 
     const x = c.width / 2;
-    const y = c.height / 2 + 28;
+    const y = c.height / 2 - 34;
 
     // Subtle chromatic split baked into the wordmark texture. Kept tiny so it
     // reads as refraction/fringe, not cyberpunk karaoke.
