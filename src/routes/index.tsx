@@ -55,7 +55,7 @@ const projects: Project[] = [
     fg: "text-[#F6F0E6]",
     accent: "text-[#E3738D]",
     chipBorder: "border-[#F6F0E6]/25",
-    noise: "rgba(12, 2, 7, 0.62)",
+    noise: "rgba(8, 1, 5, 0.72)",
   },
   {
     index: "02",
@@ -70,7 +70,7 @@ const projects: Project[] = [
     fg: "text-[#F6F0E6]",
     accent: "text-[#E3738D]",
     chipBorder: "border-[#F6F0E6]/25",
-    noise: "rgba(57, 11, 8, 0.52)",
+    noise: "rgba(42, 7, 5, 0.66)",
   },
   {
     index: "03",
@@ -85,7 +85,7 @@ const projects: Project[] = [
     fg: "text-[#2E0A17]",
     accent: "text-[#2E0A17]",
     chipBorder: "border-[#2E0A17]/30",
-    noise: "rgba(101, 43, 15, 0.45)",
+    noise: "rgba(86, 34, 9, 0.58)",
   },
   {
     index: "04",
@@ -100,7 +100,7 @@ const projects: Project[] = [
     fg: "text-[#2E0A17]",
     accent: "text-[#821C16]",
     chipBorder: "border-[#2E0A17]/30",
-    noise: "rgba(138, 96, 25, 0.38)",
+    noise: "rgba(126, 82, 13, 0.5)",
   },
   {
     index: "05",
@@ -115,7 +115,7 @@ const projects: Project[] = [
     fg: "text-[#2E0A17]",
     accent: "text-[#BD5D26]",
     chipBorder: "border-[#2E0A17]/30",
-    noise: "rgba(178, 160, 127, 0.5)",
+    noise: "rgba(166, 142, 100, 0.62)",
   },
 ];
 
@@ -285,14 +285,18 @@ function Work() {
 
 function Slice({ project: p }: { project: Project }) {
   const isExternal = p.href.startsWith("http");
+  const grainSvg = encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="260" height="260" viewBox="0 0 260 260"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="1.28" numOctaves="3" seed="9" stitchTiles="stitch" result="noise"/><feColorMatrix in="noise" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4.4 -2.05" result="specks"/><feComposite in="SourceGraphic" in2="specks" operator="in"/></filter><rect width="260" height="260" fill="${p.noise}" filter="url(#grain)"/></svg>`,
+  );
   const speckleTexture = {
-    backgroundImage: `radial-gradient(circle, ${p.noise} 0 1px, transparent 1.35px), radial-gradient(circle, ${p.noise} 0 0.7px, transparent 1.1px)`,
-    backgroundPosition: "0 0, 7px 11px",
-    backgroundSize: "16px 16px, 23px 23px",
+    backgroundImage: `url("data:image/svg+xml,${grainSvg}"), radial-gradient(circle, ${p.noise} 0 0.34px, transparent 0.54px), radial-gradient(circle, ${p.noise} 0 0.24px, transparent 0.42px)`,
+    backgroundPosition: "right top, 0 0, 3px 5px",
+    backgroundRepeat: "repeat",
+    backgroundSize: "260px 260px, 4px 4px, 7px 7px",
     maskImage:
-      "linear-gradient(to left, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.78) 24%, rgba(0,0,0,0.28) 58%, transparent 100%)",
+      "linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.96) 16%, rgba(0,0,0,0.68) 38%, rgba(0,0,0,0.3) 62%, transparent 100%)",
     WebkitMaskImage:
-      "linear-gradient(to left, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.78) 24%, rgba(0,0,0,0.28) 58%, transparent 100%)",
+      "linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.96) 16%, rgba(0,0,0,0.68) 38%, rgba(0,0,0,0.3) 62%, transparent 100%)",
   };
 
   return (
@@ -302,7 +306,7 @@ function Slice({ project: p }: { project: Project }) {
       rel="noreferrer"
       className={`group relative flex-[1] cursor-pointer overflow-hidden border-r border-[#F6F0E6]/20 transition-[flex-grow] duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] last:border-r-0 hover:flex-[6] ${p.bg} ${p.fg}`}
     >
-      {/* Darker speckled grain that grows in from the right on hover. */}
+      {/* Dense darker grain that blooms in from the right on hover. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100"
