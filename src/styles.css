@@ -34,7 +34,7 @@
   --color-maroon: var(--maroon);
   --color-crimson: var(--crimson);
   --color-burnt: var(--burnt);
-  --color-gold: var(--gold);
+  --color-rose: var(--rose);
   --color-cream: var(--cream);
 
   --font-sans: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
@@ -49,7 +49,7 @@
   --maroon: #2e0a17;
   --crimson: #821c16;
   --burnt: #bd5d26;
-  --gold: #e3738d;
+  --rose: #e3738d;
   --cream: #f6f0e6;
 
   --background: var(--teal);
@@ -64,13 +64,13 @@
   --secondary-foreground: var(--cream);
   --muted: color-mix(in oklab, var(--teal) 80%, black);
   --muted-foreground: color-mix(in oklab, var(--cream) 70%, transparent);
-  --accent: var(--gold);
+  --accent: var(--rose);
   --accent-foreground: var(--maroon);
   --destructive: oklch(0.62 0.22 25);
   --destructive-foreground: var(--cream);
   --border: color-mix(in oklab, var(--cream) 20%, transparent);
   --input: color-mix(in oklab, var(--cream) 25%, transparent);
-  --ring: var(--gold);
+  --ring: var(--rose);
 }
 
 .dark {
@@ -93,7 +93,7 @@
   }
 
   ::selection {
-    background: var(--gold);
+    background: var(--rose);
     color: var(--maroon);
   }
 }
