@@ -38,6 +38,7 @@ type Project = {
   fg: string;
   accent: string;
   chipBorder: string;
+  noise: string;
 };
 
 const projects: Project[] = [
@@ -54,6 +55,7 @@ const projects: Project[] = [
     fg: "text-[#F6F0E6]",
     accent: "text-[#E3738D]",
     chipBorder: "border-[#F6F0E6]/25",
+    noise: "rgba(12, 2, 7, 0.62)",
   },
   {
     index: "02",
@@ -68,6 +70,7 @@ const projects: Project[] = [
     fg: "text-[#F6F0E6]",
     accent: "text-[#E3738D]",
     chipBorder: "border-[#F6F0E6]/25",
+    noise: "rgba(57, 11, 8, 0.52)",
   },
   {
     index: "03",
@@ -82,6 +85,7 @@ const projects: Project[] = [
     fg: "text-[#2E0A17]",
     accent: "text-[#2E0A17]",
     chipBorder: "border-[#2E0A17]/30",
+    noise: "rgba(101, 43, 15, 0.45)",
   },
   {
     index: "04",
@@ -96,6 +100,7 @@ const projects: Project[] = [
     fg: "text-[#2E0A17]",
     accent: "text-[#821C16]",
     chipBorder: "border-[#2E0A17]/30",
+    noise: "rgba(138, 96, 25, 0.38)",
   },
   {
     index: "05",
@@ -110,6 +115,7 @@ const projects: Project[] = [
     fg: "text-[#2E0A17]",
     accent: "text-[#BD5D26]",
     chipBorder: "border-[#2E0A17]/30",
+    noise: "rgba(178, 160, 127, 0.5)",
   },
 ];
 
@@ -279,6 +285,16 @@ function Work() {
 
 function Slice({ project: p }: { project: Project }) {
   const isExternal = p.href.startsWith("http");
+  const speckleTexture = {
+    backgroundImage: `radial-gradient(circle, ${p.noise} 0 1px, transparent 1.35px), radial-gradient(circle, ${p.noise} 0 0.7px, transparent 1.1px)`,
+    backgroundPosition: "0 0, 7px 11px",
+    backgroundSize: "16px 16px, 23px 23px",
+    maskImage:
+      "linear-gradient(to left, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.78) 24%, rgba(0,0,0,0.28) 58%, transparent 100%)",
+    WebkitMaskImage:
+      "linear-gradient(to left, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.78) 24%, rgba(0,0,0,0.28) 58%, transparent 100%)",
+  };
+
   return (
     <a
       href={p.href}
@@ -286,6 +302,13 @@ function Slice({ project: p }: { project: Project }) {
       rel="noreferrer"
       className={`group relative flex-[1] cursor-pointer overflow-hidden border-r border-[#F6F0E6]/20 transition-[flex-grow] duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] last:border-r-0 hover:flex-[6] ${p.bg} ${p.fg}`}
     >
+      {/* Darker speckled grain that grows in from the right on hover. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100"
+        style={speckleTexture}
+      />
+
       {/* Index number at top */}
       <div
         className={`absolute left-6 top-6 font-mono text-xs opacity-70 transition-opacity duration-500 ${p.accent}`}
@@ -324,12 +347,6 @@ function Slice({ project: p }: { project: Project }) {
           <ArrowUpRight className="h-4 w-4" />
         </div>
       </div>
-
-      {/* Subtle refraction sheen on hover */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,transparent_35%,rgba(255,255,255,0.08)_50%,transparent_65%)] opacity-0 transition-opacity duration-700 group-hover:opacity-100"
-      />
     </a>
   );
 }
