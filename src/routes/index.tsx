@@ -46,6 +46,8 @@ const buildGrainSvg = (colour: string) =>
     `<svg xmlns="http://www.w3.org/2000/svg" width="260" height="260" viewBox="0 0 260 260"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="1.28" numOctaves="3" seed="9" stitchTiles="stitch" result="noise"/><feColorMatrix in="noise" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4.4 -2.05" result="specks"/><feComposite in="SourceGraphic" in2="specks" operator="in"/></filter><rect width="260" height="260" fill="${colour}" filter="url(#grain)"/></svg>`,
   );
 
+const HERO_GRAIN = "rgba(15, 84, 70, 0.62)";
+
 const projects: Project[] = [
   {
     index: "01",
@@ -124,6 +126,23 @@ const projects: Project[] = [
   },
 ];
 
+function grainTexture(
+  colour: string,
+  maskImage: string,
+  backgroundPosition = "left top, 0 0, 3px 5px",
+) {
+  const grainSvg = buildGrainSvg(colour);
+
+  return {
+    backgroundImage: `url("data:image/svg+xml,${grainSvg}"), radial-gradient(circle, ${colour} 0 0.34px, transparent 0.54px), radial-gradient(circle, ${colour} 0 0.24px, transparent 0.42px)`,
+    backgroundPosition,
+    backgroundRepeat: "repeat",
+    backgroundSize: "260px 260px, 4px 4px, 7px 7px",
+    maskImage,
+    WebkitMaskImage: maskImage,
+  };
+}
+
 function Index() {
   return (
     <div className="relative h-screen w-full snap-y snap-mandatory overflow-x-hidden overflow-y-auto overscroll-y-contain scroll-smooth bg-[#2D9B83] text-[#F6F0E6]">
@@ -140,6 +159,7 @@ function Index() {
       <section id="hero" className="relative min-h-screen snap-start snap-always overflow-visible">
         <Header />
         <Hero />
+        <HeroBottomGrain />
       </section>
       <Work />
       <Footer />
@@ -148,18 +168,10 @@ function Index() {
 }
 
 function Header() {
-  const headerNoise = "rgba(15, 84, 70, 0.62)";
-  const headerGrainSvg = buildGrainSvg(headerNoise);
-  const headerNoiseTexture = {
-    backgroundImage: `url("data:image/svg+xml,${headerGrainSvg}"), radial-gradient(circle, ${headerNoise} 0 0.34px, transparent 0.54px), radial-gradient(circle, ${headerNoise} 0 0.24px, transparent 0.42px)`,
-    backgroundPosition: "left top, 0 0, 3px 5px",
-    backgroundRepeat: "repeat",
-    backgroundSize: "260px 260px, 4px 4px, 7px 7px",
-    maskImage:
-      "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.88) 24%, rgba(0,0,0,0.42) 58%, transparent 100%)",
-    WebkitMaskImage:
-      "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.88) 24%, rgba(0,0,0,0.42) 58%, transparent 100%)",
-  };
+  const headerNoiseTexture = grainTexture(
+    HERO_GRAIN,
+    "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.88) 24%, rgba(0,0,0,0.42) 58%, transparent 100%)",
+  );
 
   return (
     <header className="relative z-40 isolate flex items-center justify-between px-6 py-6 md:px-10">
@@ -198,6 +210,22 @@ function Header() {
         </a>
       </nav>
     </header>
+  );
+}
+
+function HeroBottomGrain() {
+  const heroBottomNoiseTexture = grainTexture(
+    HERO_GRAIN,
+    "linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.88) 24%, rgba(0,0,0,0.42) 58%, transparent 100%)",
+    "left bottom, 0 0, 3px 5px",
+  );
+
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-48 md:h-56"
+      style={heroBottomNoiseTexture}
+    />
   );
 }
 
@@ -265,17 +293,11 @@ function Work() {
 
 function Slice({ project: p }: { project: Project }) {
   const isExternal = p.href.startsWith("http");
-  const grainSvg = buildGrainSvg(p.noise);
-  const speckleTexture = {
-    backgroundImage: `url("data:image/svg+xml,${grainSvg}"), radial-gradient(circle, ${p.noise} 0 0.34px, transparent 0.54px), radial-gradient(circle, ${p.noise} 0 0.24px, transparent 0.42px)`,
-    backgroundPosition: "right top, 0 0, 3px 5px",
-    backgroundRepeat: "repeat",
-    backgroundSize: "260px 260px, 4px 4px, 7px 7px",
-    maskImage:
-      "linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.96) 16%, rgba(0,0,0,0.68) 38%, rgba(0,0,0,0.3) 62%, transparent 100%)",
-    WebkitMaskImage:
-      "linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.96) 16%, rgba(0,0,0,0.68) 38%, rgba(0,0,0,0.3) 62%, transparent 100%)",
-  };
+  const speckleTexture = grainTexture(
+    p.noise,
+    "linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.96) 16%, rgba(0,0,0,0.68) 38%, rgba(0,0,0,0.3) 62%, transparent 100%)",
+    "right top, 0 0, 3px 5px",
+  );
 
   return (
     <a
