@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useRef, type WheelEvent } from "react";
 import { ArrowUpRight } from "lucide-react";
 
 const LiquidSphere = lazy(() =>
@@ -169,8 +169,36 @@ function Header() {
 }
 
 function Hero() {
+  const heroExitLockedRef = useRef(false);
+
+  const handleHeroWheel = (event: WheelEvent<HTMLElement>) => {
+    if (event.ctrlKey || event.deltaY <= 18 || heroExitLockedRef.current) return;
+
+    const work = document.getElementById("work");
+    if (!work) return;
+
+    const heroRect = event.currentTarget.getBoundingClientRect();
+    const stillInHero = heroRect.bottom > window.innerHeight * 0.45;
+    const heroHasNotMostlyPassed = heroRect.top > -window.innerHeight * 0.35;
+
+    if (!stillInHero || !heroHasNotMostlyPassed) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    heroExitLockedRef.current = true;
+    work.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    window.setTimeout(() => {
+      heroExitLockedRef.current = false;
+    }, 950);
+  };
+
   return (
-    <section className="relative z-20 isolate flex min-h-[82vh] flex-col justify-between overflow-visible px-6 pb-14 pt-2 md:px-10 md:pb-20">
+    <section
+      onWheelCapture={handleHeroWheel}
+      className="relative z-20 isolate flex min-h-[82vh] flex-col justify-between overflow-visible px-6 pb-14 pt-2 md:px-10 md:pb-20"
+    >
       {/* Canvas: 3D "nodeyard" wordmark refracted through the transparent sphere */}
       <div className="pointer-events-none absolute inset-x-0 -top-24 -bottom-32 z-20 flex items-center justify-center overflow-visible">
         <div
