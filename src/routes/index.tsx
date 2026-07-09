@@ -213,18 +213,18 @@ function Header() {
   );
 }
 
-function HeroBottomGrain() {
-  const heroBottomNoiseTexture = grainTexture(
+function HeroGrainField() {
+  const heroNoiseTexture = grainTexture(
     HERO_GRAIN,
-    "linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.9) 18%, rgba(0,0,0,0.52) 48%, rgba(0,0,0,0.16) 74%, transparent 100%)",
+    "linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.66) 16%, rgba(0,0,0,0.26) 36%, rgba(0,0,0,0.13) 68%, rgba(0,0,0,0.08) 100%)",
     "left bottom, 0 0, 3px 5px",
   );
 
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-x-0 bottom-[-1px] z-[25] h-[38svh] min-h-[280px] md:h-[44svh] md:min-h-[360px]"
-      style={heroBottomNoiseTexture}
+      className="pointer-events-none absolute inset-x-0 bottom-[-1px] top-[-76px] z-[25]"
+      style={heroNoiseTexture}
     />
   );
 }
@@ -244,7 +244,7 @@ function Hero() {
         </div>
       </div>
 
-      <HeroBottomGrain />
+      <HeroGrainField />
 
       {/* Top-left eyebrow */}
       <div className="text-eyebrow relative z-30 flex items-center gap-3 pt-6">
