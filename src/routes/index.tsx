@@ -160,7 +160,6 @@ function Index() {
       <section id="hero" className="relative min-h-screen snap-start snap-always overflow-visible">
         <Header />
         <Hero />
-        <HeroBottomGrain />
       </section>
       <Work />
       <Footer />
@@ -217,14 +216,14 @@ function Header() {
 function HeroBottomGrain() {
   const heroBottomNoiseTexture = grainTexture(
     HERO_GRAIN,
-    "linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.88) 24%, rgba(0,0,0,0.42) 58%, transparent 100%)",
+    "linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.9) 18%, rgba(0,0,0,0.52) 48%, rgba(0,0,0,0.16) 74%, transparent 100%)",
     "left bottom, 0 0, 3px 5px",
   );
 
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-48 md:h-56"
+      className="pointer-events-none absolute inset-x-0 bottom-[-1px] z-[25] h-[38svh] min-h-[280px] md:h-[44svh] md:min-h-[360px]"
       style={heroBottomNoiseTexture}
     />
   );
@@ -244,6 +243,8 @@ function Hero() {
           </Suspense>
         </div>
       </div>
+
+      <HeroBottomGrain />
 
       {/* Top-left eyebrow */}
       <div className="text-eyebrow relative z-30 flex items-center gap-3 pt-6">
