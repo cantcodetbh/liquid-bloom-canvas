@@ -47,6 +47,7 @@ const buildGrainSvg = (colour: string) =>
   );
 
 const HERO_GRAIN = "rgba(15, 84, 70, 0.62)";
+const FOOTER_GRAIN = "rgba(246, 240, 230, 0.18)";
 
 const projects: Project[] = [
   {
@@ -356,9 +357,20 @@ function Slice({ project: p }: { project: Project }) {
 }
 
 function Footer() {
+  const footerNoiseTexture = grainTexture(
+    FOOTER_GRAIN,
+    "linear-gradient(rgba(0,0,0,0.42), rgba(0,0,0,0.42))",
+  );
+
   return (
-    <footer className="relative z-10 snap-start snap-always border-t border-[#F6F0E6]/20 bg-[#0f0308]">
-      <div className="flex min-h-screen flex-col items-start justify-between gap-10 px-6 py-16 md:flex-row md:items-end md:px-10">
+    <footer className="relative z-10 isolate snap-start snap-always overflow-hidden border-t border-[#F6F0E6]/20 bg-[#0f0308]">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0"
+        style={footerNoiseTexture}
+      />
+
+      <div className="relative z-10 flex min-h-screen flex-col items-start justify-between gap-10 px-6 py-16 md:flex-row md:items-end md:px-10">
         <div>
           <div className="text-eyebrow mb-4 text-[#E3738D]">
             Hosted from nodeyard
