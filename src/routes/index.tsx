@@ -292,7 +292,7 @@ function Header() {
 function HeroGrainField() {
   const heroNoiseTexture = grainTexture(
     HERO_GRAIN,
-    "linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2))",
+    "linear-gradient(to bottom, rgba(0,0,0,0.34) 0%, rgba(0,0,0,0.22) 14%, rgba(0,0,0,0.18) 30%, rgba(0,0,0,0.18) 70%, rgba(0,0,0,0.22) 86%, rgba(0,0,0,0.34) 100%)",
     "left top, 0 0, 3px 5px",
   );
 
