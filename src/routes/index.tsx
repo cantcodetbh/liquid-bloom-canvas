@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
 
 const LiquidSphere = lazy(() =>
@@ -43,7 +43,6 @@ type Project = {
 
 const roseHoverLink =
   "transition-[color,font-weight] duration-200 hover:font-bold hover:text-[#E3738D]";
-const WHEEL_STEP_LOCK_MS = 560;
 
 const buildGrainSvg = (colour: string) =>
   encodeURIComponent(
@@ -354,112 +353,14 @@ function Hero() {
 }
 
 function Work() {
-  const [activeProjectIndex, setActiveProjectIndex] = useState<number | null>(null);
-  const activeProjectIndexRef = useRef<number | null>(null);
-  const wheelLockRef = useRef(0);
-  const workSectionRef = useRef<HTMLElement | null>(null);
   const selectedWorkNoiseTexture = grainTexture(
     HERO_GRAIN,
     "linear-gradient(rgba(0,0,0,0.58), rgba(0,0,0,0.58))",
     "left bottom, 0 0, 3px 5px",
   );
 
-  const activateProject = (projectIndex: number) => {
-    activeProjectIndexRef.current = projectIndex;
-    setActiveProjectIndex(projectIndex);
-  };
-
-  useEffect(() => {
-    activeProjectIndexRef.current = activeProjectIndex;
-  }, [activeProjectIndex]);
-
-  useEffect(() => {
-    const workSection = workSectionRef.current;
-    const scrollContainer = workSection?.parentElement;
-    if (!workSection || !scrollContainer) return;
-
-    const pinToWork = (behavior: ScrollBehavior = "auto") => {
-      scrollContainer.scrollTo({ top: workSection.offsetTop, behavior });
-    };
-
-    const preventWheel = (event: globalThis.WheelEvent) => {
-      event.preventDefault();
-      event.stopPropagation();
-    };
-
-    const handlePortfolioWheel = (event: globalThis.WheelEvent) => {
-      if (Math.abs(event.deltaY) < 10) return;
-
-      const direction = event.deltaY > 0 ? 1 : -1;
-      const workTop = workSection.offsetTop;
-      const footerTop = workTop + workSection.offsetHeight;
-      const scrollTop = scrollContainer.scrollTop;
-      const currentIndex = activeProjectIndexRef.current;
-      const aboveWork = scrollTop < workTop - 8;
-      const belowWork = scrollTop >= footerTop - 8;
-      const insideWork = scrollTop >= workTop - 8 && scrollTop < footerTop - 8;
-      const now = Date.now();
-
-      if (direction > 0 && aboveWork) {
-        preventWheel(event);
-        activeProjectIndexRef.current = null;
-        setActiveProjectIndex(null);
-        pinToWork("smooth");
-        wheelLockRef.current = now;
-        return;
-      }
-
-      if (direction < 0 && belowWork) {
-        preventWheel(event);
-        activeProjectIndexRef.current = projects.length - 1;
-        setActiveProjectIndex(projects.length - 1);
-        pinToWork("smooth");
-        wheelLockRef.current = now;
-        return;
-      }
-
-      if (!insideWork) return;
-
-      let nextIndex: number | null | undefined;
-
-      if (direction > 0) {
-        if (currentIndex === null) {
-          nextIndex = 0;
-        } else if (currentIndex < projects.length - 1) {
-          nextIndex = currentIndex + 1;
-        }
-      } else if (currentIndex !== null) {
-        nextIndex = currentIndex > 0 ? currentIndex - 1 : null;
-      }
-
-      if (nextIndex === undefined) return;
-
-      preventWheel(event);
-      pinToWork();
-
-      if (now - wheelLockRef.current < WHEEL_STEP_LOCK_MS) return;
-
-      wheelLockRef.current = now;
-      activeProjectIndexRef.current = nextIndex;
-      setActiveProjectIndex(nextIndex);
-    };
-
-    scrollContainer.addEventListener("wheel", handlePortfolioWheel, {
-      capture: true,
-      passive: false,
-    });
-
-    return () => {
-      scrollContainer.removeEventListener("wheel", handlePortfolioWheel, true);
-    };
-  }, []);
-
   return (
-    <section
-      ref={workSectionRef}
-      id="work"
-      className="relative z-10 flex w-full snap-start snap-always scroll-mt-0 flex-col"
-    >
+    <section id="work" className="relative z-10 flex w-full snap-start snap-always scroll-mt-0 flex-col">
       <div className="relative isolate flex items-end justify-between overflow-hidden border-t border-[#F6F0E6]/20 px-6 py-6 md:px-10">
         <div
           aria-hidden
@@ -468,34 +369,21 @@ function Work() {
         />
         <div className="text-eyebrow relative z-10">Selected work · 05</div>
         <div className="text-eyebrow relative z-10 hidden md:block">
-          Scroll or hover through slices ↓
+          Hover a slice to open ↓
         </div>
       </div>
 
       {/* Slice strip */}
       <div className="flex h-[calc(100svh-73px)] min-h-[520px] w-full border-t border-[#F6F0E6]/20 md:min-h-[580px]">
-        {projects.map((p, projectIndex) => (
-          <Slice
-            key={p.index}
-            project={p}
-            isActive={projectIndex === activeProjectIndex}
-            onActivate={() => activateProject(projectIndex)}
-          />
+        {projects.map((p) => (
+          <Slice key={p.index} project={p} />
         ))}
       </div>
     </section>
   );
 }
 
-function Slice({
-  project: p,
-  isActive,
-  onActivate,
-}: {
-  project: Project;
-  isActive: boolean;
-  onActivate: () => void;
-}) {
+function Slice({ project: p }: { project: Project }) {
   const isExternal = p.href.startsWith("http");
   const baseSpeckleTexture = grainTexture(
     p.noise,
@@ -513,22 +401,19 @@ function Slice({
       href={p.href}
       target={isExternal ? "_blank" : undefined}
       rel="noreferrer"
-      aria-current={isActive ? "true" : undefined}
-      onFocus={onActivate}
-      onMouseEnter={onActivate}
-      className={`group relative ${isActive ? "flex-[6]" : "flex-[1]"} cursor-pointer overflow-hidden border-r border-[#F6F0E6]/20 transition-[flex-grow] duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] last:border-r-0 ${p.bg} ${p.fg}`}
+      className={`group relative flex-[1] cursor-pointer overflow-hidden border-r border-[#F6F0E6]/20 transition-[flex-grow] duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] last:border-r-0 hover:flex-[6] ${p.bg} ${p.fg}`}
     >
       {/* Always-on slice grain so collapsed panels keep the same printed texture. */}
       <div
         aria-hidden
-        className={`pointer-events-none absolute inset-0 transition-opacity duration-700 ${isActive ? "opacity-55" : "opacity-80"}`}
+        className="pointer-events-none absolute inset-0 opacity-80 transition-opacity duration-700 group-hover:opacity-55"
         style={baseSpeckleTexture}
       />
 
-      {/* Stronger active grain that blooms in from the right on expansion. */}
+      {/* Stronger hover grain that blooms in from the right on expansion. */}
       <div
         aria-hidden
-        className={`pointer-events-none absolute inset-0 transition-opacity duration-700 ${isActive ? "opacity-100" : "opacity-0"}`}
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100"
         style={speckleTexture}
       />
 
@@ -540,30 +425,14 @@ function Slice({
       </div>
 
       {/* Rotated title (collapsed state) */}
-      <div
-        className={`absolute transition-all duration-700 ${
-          isActive
-            ? "left-10 top-14 translate-x-0 md:top-16"
-            : "left-1/2 top-20 -translate-x-1/2"
-        }`}
-      >
-        <h3
-          className={`text-wordmark origin-left whitespace-nowrap transition-all duration-700 ${
-            isActive ? "rotate-0 text-5xl md:text-6xl" : "rotate-90 text-3xl"
-          }`}
-        >
+      <div className="absolute left-1/2 top-20 -translate-x-1/2 transition-all duration-700 group-hover:left-10 group-hover:top-14 group-hover:translate-x-0 md:group-hover:top-16">
+        <h3 className="text-wordmark origin-left rotate-90 whitespace-nowrap text-3xl transition-all duration-700 group-hover:rotate-0 group-hover:text-5xl md:group-hover:text-6xl">
           {p.title}
         </h3>
       </div>
 
       {/* Expanded detail */}
-      <div
-        className={`flex h-full flex-col justify-center overflow-y-auto p-6 pt-28 transition-opacity duration-500 delay-200 md:p-10 md:pt-32 ${
-          isActive
-            ? "pointer-events-auto opacity-100"
-            : "pointer-events-none opacity-0"
-        }`}
-      >
+      <div className="pointer-events-none flex h-full flex-col justify-center overflow-y-auto p-6 pt-28 opacity-0 transition-opacity duration-500 delay-200 group-hover:pointer-events-auto group-hover:opacity-100 md:p-10 md:pt-32">
         <span className={`text-eyebrow mb-4 ${p.accent}`}>
           {p.index} / {p.kind}
         </span>
@@ -582,11 +451,7 @@ function Slice({
         </div>
         <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest">
           <span>{p.cta}</span>
-          <span
-            className={`h-px w-10 ${
-              p.fg === "text-[#F6F0E6]" ? "bg-[#F6F0E6]" : "bg-[#2E0A17]"
-            } transition-all duration-500 ${isActive ? "w-20" : ""}`}
-          />
+          <span className={`h-px w-10 ${p.fg === "text-[#F6F0E6]" ? "bg-[#F6F0E6]" : "bg-[#2E0A17]"} transition-all duration-500 group-hover:w-20`} />
           <ArrowUpRight className="h-4 w-4" />
         </div>
       </div>
