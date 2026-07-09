@@ -127,7 +127,7 @@ function BackgroundWordmark() {
 }
 
 function WaterBlob() {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
   const cursorTargetRef = useRef(new THREE.Vector2(0, 0));
   const cursorRef = useRef(new THREE.Vector2(0, 0));
   const radius = 1.55;
@@ -220,55 +220,75 @@ function WaterBlob() {
     geometry.attributes.position.needsUpdate = true;
     geometry.computeVertexNormals();
 
-    if (meshRef.current) {
+    if (groupRef.current) {
       const floatY = Math.sin(t * 0.5) * 0.08;
       const targetX = cursorX * 0.32;
       const targetY = cursorY * 0.22 + floatY;
       const targetScale = 1 + cursorActivity * 0.04;
 
-      meshRef.current.position.x = THREE.MathUtils.lerp(
-        meshRef.current.position.x,
+      groupRef.current.position.x = THREE.MathUtils.lerp(
+        groupRef.current.position.x,
         targetX,
         0.065,
       );
-      meshRef.current.position.y = THREE.MathUtils.lerp(
-        meshRef.current.position.y,
+      groupRef.current.position.y = THREE.MathUtils.lerp(
+        groupRef.current.position.y,
         targetY,
         0.065,
       );
-      meshRef.current.rotation.y = t * 0.28 + cursorX * 0.12;
-      meshRef.current.rotation.x = Math.sin(t * 0.4) * 0.2 - cursorY * 0.1;
-      meshRef.current.scale.setScalar(
-        THREE.MathUtils.lerp(meshRef.current.scale.x, targetScale, 0.08),
+      groupRef.current.rotation.y = t * 0.28 + cursorX * 0.12;
+      groupRef.current.rotation.x = Math.sin(t * 0.4) * 0.2 - cursorY * 0.1;
+      groupRef.current.scale.setScalar(
+        THREE.MathUtils.lerp(groupRef.current.scale.x, targetScale, 0.08),
       );
     }
   });
 
   return (
-    <mesh ref={meshRef} geometry={geometry}>
-      <MeshTransmissionMaterial
-        samples={12}
-        resolution={1024}
-        transmission={1}
-        roughness={0}
-        thickness={0.68}
-        ior={1.33}
-        chromaticAberration={1.12}
-        anisotropy={0}
-        distortion={0.52}
-        distortionScale={0.78}
-        temporalDistortion={0.14}
-        backside
-        backsideThickness={0.34}
-        clearcoat={0}
-        clearcoatRoughness={1}
-        attenuationDistance={12}
-        attenuationColor="#e8fff8"
-        color="#ffffff"
-        reflectivity={0}
-        metalness={0}
-      />
-    </mesh>
+    <group ref={groupRef}>
+      {/* Difference-blended shell: white custom blending inverts the pixels that
+          have already been rendered behind the sphere, keeping the effect bound
+          to the liquid silhouette. */}
+      <mesh geometry={geometry} renderOrder={1}>
+        <meshBasicMaterial
+          color="#ffffff"
+          transparent
+          opacity={0.58}
+          depthWrite={false}
+          depthTest={false}
+          toneMapped={false}
+          blending={THREE.CustomBlending}
+          blendEquation={THREE.AddEquation}
+          blendSrc={THREE.OneMinusDstColorFactor}
+          blendDst={THREE.OneMinusSrcColorFactor}
+        />
+      </mesh>
+
+      <mesh geometry={geometry} renderOrder={2}>
+        <MeshTransmissionMaterial
+          samples={12}
+          resolution={1024}
+          transmission={1}
+          roughness={0}
+          thickness={0.68}
+          ior={1.33}
+          chromaticAberration={1.12}
+          anisotropy={0}
+          distortion={0.52}
+          distortionScale={0.78}
+          temporalDistortion={0.14}
+          backside
+          backsideThickness={0.34}
+          clearcoat={0}
+          clearcoatRoughness={1}
+          attenuationDistance={12}
+          attenuationColor="#e8fff8"
+          color="#ffffff"
+          reflectivity={0}
+          metalness={0}
+        />
+      </mesh>
+    </group>
   );
 }
 
