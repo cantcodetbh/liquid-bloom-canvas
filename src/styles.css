@@ -52,6 +52,23 @@
   --rose: #e3738d;
   --cream: #f6f0e6;
 
+  /*
+    Text rhythm formula:
+    1u = inline relationships, like icon gaps and chips.
+    2u = eyebrow to major copy or heading.
+    3u = body copy to supporting rows.
+    4u = text block to primary action.
+    6u = section-level breathing room.
+  */
+  --space-u: clamp(0.48rem, 0.34vw + 0.36rem, 0.76rem);
+  --space-inline: var(--space-u);
+  --space-kicker-title: calc(var(--space-u) * 2);
+  --space-copy-list: calc(var(--space-u) * 3);
+  --space-body-action: calc(var(--space-u) * 4);
+  --space-section: calc(var(--space-u) * 6);
+  --measure-copy: clamp(22rem, 36vw, 30rem);
+  --measure-project: clamp(24rem, 38vw, 34rem);
+
   --background: var(--teal);
   --foreground: var(--cream);
   --card: var(--maroon);
@@ -106,12 +123,50 @@
   text-transform: lowercase;
 }
 
-
 @utility text-eyebrow {
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.24em;
+  line-height: 1.25;
   text-transform: uppercase;
+}
+
+@utility text-copy {
+  font-family: var(--font-mono);
+  font-size: clamp(0.875rem, 0.28vw + 0.8rem, 1rem);
+  line-height: 1.68;
+}
+
+@utility text-project-copy {
+  font-size: clamp(1.1rem, 0.52vw + 0.98rem, 1.32rem);
+  letter-spacing: -0.012em;
+  line-height: 1.18;
+}
+
+@utility type-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-kicker-title);
+}
+
+@utility type-stack-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-body-action);
+}
+
+@utility type-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-inline);
+}
+
+@utility type-action-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-inline);
 }
 
 @utility chromatic-shadow {
