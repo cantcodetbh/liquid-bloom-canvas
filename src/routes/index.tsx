@@ -256,20 +256,8 @@ function CursorFollower() {
 }
 
 function Header() {
-  const headerNoiseTexture = grainTexture(
-    HERO_GRAIN,
-    "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.88) 24%, rgba(0,0,0,0.42) 58%, transparent 100%)",
-  );
-
   return (
     <header className="relative z-40 isolate flex items-center justify-between px-6 py-6 md:px-10">
-      {/* Top-down header grain, strongest at the very top and fading into the hero. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-40"
-        style={headerNoiseTexture}
-      />
-
       <a
         href="/"
         className="text-wordmark relative z-10 text-2xl tracking-[-0.05em]"
@@ -304,14 +292,14 @@ function Header() {
 function HeroGrainField() {
   const heroNoiseTexture = grainTexture(
     HERO_GRAIN,
-    "linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.66) 16%, rgba(0,0,0,0.26) 36%, rgba(0,0,0,0.13) 68%, rgba(0,0,0,0.08) 100%)",
-    "left bottom, 0 0, 3px 5px",
+    "linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2))",
+    "left top, 0 0, 3px 5px",
   );
 
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-x-0 bottom-[-1px] top-[-76px] z-[25]"
+      className="pointer-events-none absolute inset-x-0 bottom-[-1px] top-[-96px] z-[25]"
       style={heroNoiseTexture}
     />
   );
