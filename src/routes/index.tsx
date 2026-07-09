@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useEffect, useRef } from "react";
+import { lazy, Suspense } from "react";
 import { ArrowUpRight } from "lucide-react";
 
 const LiquidSphere = lazy(() =>
@@ -121,7 +121,7 @@ const projects: Project[] = [
 
 function Index() {
   return (
-    <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-[#2D9B83] text-[#F6F0E6]">
+    <div className="relative h-screen w-full snap-y snap-mandatory overflow-x-hidden overflow-y-auto overscroll-y-contain scroll-smooth bg-[#2D9B83] text-[#F6F0E6]">
       {/* film grain */}
       <div
         aria-hidden
@@ -132,8 +132,10 @@ function Index() {
         }}
       />
 
-      <Header />
-      <Hero />
+      <section id="hero" className="relative min-h-screen snap-start snap-always overflow-visible">
+        <Header />
+        <Hero />
+      </section>
       <Work />
       <Footer />
     </div>
@@ -175,55 +177,8 @@ function Header() {
 }
 
 function Hero() {
-  const heroRef = useRef<HTMLElement | null>(null);
-  const heroExitLockedRef = useRef(false);
-
-  useEffect(() => {
-    let unlockTimer: number | undefined;
-
-    const handleWindowWheel = (event: globalThis.WheelEvent) => {
-      if (event.ctrlKey || event.deltaY <= 8 || heroExitLockedRef.current) return;
-      if (Math.abs(event.deltaX) > Math.abs(event.deltaY) * 1.25) return;
-
-      const hero = heroRef.current;
-      const work = document.getElementById("work");
-      if (!hero || !work) return;
-
-      const heroRect = hero.getBoundingClientRect();
-      const workRect = work.getBoundingClientRect();
-      const heroStillDominatesViewport = heroRect.bottom > window.innerHeight * 0.42;
-      const heroHasNotMostlyPassed = heroRect.top > -window.innerHeight * 0.45;
-      const workIsNotAlreadyArriving = workRect.top > window.innerHeight * 0.18;
-
-      if (!heroStillDominatesViewport || !heroHasNotMostlyPassed || !workIsNotAlreadyArriving) return;
-
-      event.preventDefault();
-      event.stopPropagation();
-
-      heroExitLockedRef.current = true;
-      window.scrollTo({
-        top: window.scrollY + workRect.top,
-        behavior: "smooth",
-      });
-
-      unlockTimer = window.setTimeout(() => {
-        heroExitLockedRef.current = false;
-      }, 950);
-    };
-
-    window.addEventListener("wheel", handleWindowWheel, { passive: false });
-
-    return () => {
-      window.removeEventListener("wheel", handleWindowWheel);
-      if (unlockTimer) window.clearTimeout(unlockTimer);
-    };
-  }, []);
-
   return (
-    <section
-      ref={heroRef}
-      className="relative z-20 isolate flex min-h-[82vh] flex-col justify-between overflow-visible px-6 pb-14 pt-2 md:px-10 md:pb-20"
-    >
+    <section className="relative z-20 isolate flex min-h-[calc(100svh-76px)] flex-col justify-between overflow-visible px-6 pb-14 pt-2 md:px-10 md:pb-20">
       {/* Canvas: 3D "nodeyard" wordmark refracted through the transparent sphere */}
       <div className="pointer-events-none absolute inset-x-0 -top-24 -bottom-32 z-20 flex items-center justify-center overflow-visible">
         <div
@@ -265,7 +220,7 @@ function Hero() {
 
 function Work() {
   return (
-    <section id="work" className="relative z-10 flex w-full flex-col scroll-mt-0">
+    <section id="work" className="relative z-10 flex w-full snap-start snap-always scroll-mt-0 flex-col">
       <div className="flex items-end justify-between border-t border-[#F6F0E6]/20 px-6 py-6 md:px-10">
         <div className="text-eyebrow">Selected work · 05</div>
         <div className="text-eyebrow hidden md:block">
@@ -357,8 +312,8 @@ function Slice({ project: p }: { project: Project }) {
 
 function Footer() {
   return (
-    <footer className="relative z-10 border-t border-[#F6F0E6]/20 bg-[#0f0308]">
-      <div className="flex flex-col items-start justify-between gap-10 px-6 py-16 md:flex-row md:items-end md:px-10">
+    <footer className="relative z-10 snap-start snap-always border-t border-[#F6F0E6]/20 bg-[#0f0308]">
+      <div className="flex min-h-screen flex-col items-start justify-between gap-10 px-6 py-16 md:flex-row md:items-end md:px-10">
         <div>
           <div className="text-eyebrow mb-4 text-[#E3738D]">
             Hosted from nodeyard
