@@ -26,6 +26,7 @@ function TealBackdrop() {
 // Wordmark plane rendered in-scene so MeshTransmissionMaterial refracts it.
 function BackgroundWordmark() {
   const { camera, viewport } = useThree();
+  const wordmarkRef = useRef<THREE.Mesh>(null);
   const [fontsReady, setFontsReady] = useState(false);
 
   useEffect(() => {
@@ -55,7 +56,6 @@ function BackgroundWordmark() {
     const maxTextWidth = c.width - horizontalPadding * 2;
 
     ctx.clearRect(0, 0, c.width, c.height);
-    ctx.fillStyle = "#F6F0E6";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
@@ -76,7 +76,18 @@ function BackgroundWordmark() {
       setFont();
     }
 
-    ctx.fillText(text, c.width / 2, c.height / 2 + 28);
+    const x = c.width / 2;
+    const y = c.height / 2 + 28;
+
+    // Subtle chromatic split baked into the wordmark texture. Kept tiny so it
+    // reads as refraction/fringe, not cyberpunk karaoke.
+    ctx.fillStyle = "rgba(255, 68, 94, 0.26)";
+    ctx.fillText(text, x - 7, y);
+    ctx.fillStyle = "rgba(68, 220, 255, 0.22)";
+    ctx.fillText(text, x + 7, y);
+
+    ctx.fillStyle = "#F6F0E6";
+    ctx.fillText(text, x, y);
 
     const tex = new THREE.CanvasTexture(c);
     tex.anisotropy = 16;
@@ -88,10 +99,18 @@ function BackgroundWordmark() {
     return () => texture.dispose();
   }, [texture]);
 
+  useFrame((state) => {
+    if (!wordmarkRef.current) return;
+
+    const t = state.clock.getElapsedTime();
+    const slowZoom = 1.025 + Math.sin(t * 0.42) * 0.012;
+    wordmarkRef.current.scale.set(slowZoom, slowZoom, 1);
+  });
+
   const wordmarkZ = -2;
   const cameraZ = Math.max(camera.position.z, 0.001);
   const perspectiveCompensation = (cameraZ - wordmarkZ) / cameraZ;
-  const edgeBleed = 1.025;
+  const edgeBleed = 1.04;
 
   // viewport.width is measured around z=0. Because this plane sits behind the
   // sphere at z=-2, compensate for perspective so the rendered wordmark reaches
@@ -100,7 +119,7 @@ function BackgroundWordmark() {
   const height = width / 4;
 
   return (
-    <mesh position={[0, 0, wordmarkZ]}>
+    <mesh ref={wordmarkRef} position={[0, 0, wordmarkZ]}>
       <planeGeometry args={[width, height]} />
       <meshBasicMaterial map={texture} transparent toneMapped={false} />
     </mesh>
@@ -109,7 +128,7 @@ function BackgroundWordmark() {
 
 function WaterBlob() {
   const meshRef = useRef<THREE.Mesh>(null);
-  const radius = 1.05;
+  const radius = 1.32;
   const geometry = useMemo(
     () => new THREE.IcosahedronGeometry(radius, 64),
     [],
@@ -133,10 +152,12 @@ function WaterBlob() {
       const oy = original[i + 1];
       const oz = original[i + 2];
 
-      // Organic wobble
+      // Organic wobble. Extra high-frequency layer gives the surface a slightly
+      // noisier liquid membrane without turning it into a crumpled bin bag.
       const n1 = noise(ox * 1.6, oy * 1.6, oz * 1.6, t);
       const n2 = noise(ox * 3.2, oy * 3.2, oz * 3.2, t * 1.5);
-      const disp = 1 + n1 * 0.14 + n2 * 0.07;
+      const n3 = noise(ox * 6.0, oy * 6.0, oz * 6.0, t * 2.4);
+      const disp = 1 + n1 * 0.18 + n2 * 0.1 + n3 * 0.045;
 
       let x = ox * disp;
       let y = oy * disp;
@@ -145,10 +166,10 @@ function WaterBlob() {
       // Dumbbell / peanut deformation along X:
       // Squeeze the middle (small |x|) in Y and Z, and push lobes outward in X.
       const nx = ox / radius; // -1..1
-      const pinch = 1 - neck * 0.55 * (1 - nx * nx); // stronger at centre
+      const pinch = 1 - neck * 0.58 * (1 - nx * nx); // stronger at centre
       y *= pinch;
       z *= pinch;
-      x += Math.sign(nx || 1) * neck * 0.35 * Math.abs(nx);
+      x += Math.sign(nx || 1) * neck * 0.42 * Math.abs(nx);
 
       pos[i] = x;
       pos[i + 1] = y;
@@ -158,8 +179,8 @@ function WaterBlob() {
     geometry.computeVertexNormals();
 
     if (meshRef.current) {
-      meshRef.current.rotation.y = t * 0.25;
-      meshRef.current.rotation.x = Math.sin(t * 0.4) * 0.18;
+      meshRef.current.rotation.y = t * 0.28;
+      meshRef.current.rotation.x = Math.sin(t * 0.4) * 0.2;
       meshRef.current.position.y = Math.sin(t * 0.5) * 0.08;
     }
   });
@@ -171,15 +192,15 @@ function WaterBlob() {
         resolution={1024}
         transmission={1}
         roughness={0}
-        thickness={0.5}
+        thickness={0.62}
         ior={1.33}
-        chromaticAberration={1.4}
+        chromaticAberration={1.12}
         anisotropy={0}
-        distortion={0.35}
-        distortionScale={0.5}
-        temporalDistortion={0.08}
+        distortion={0.48}
+        distortionScale={0.72}
+        temporalDistortion={0.12}
         backside
-        backsideThickness={0.25}
+        backsideThickness={0.3}
         clearcoat={0}
         clearcoatRoughness={1}
         attenuationDistance={12}
