@@ -331,9 +331,9 @@ function Hero() {
         Portfolio · MMXXVI · v03
       </div>
 
-      {/* Bottom row: intro + CTA */}
-      <div className="relative z-30 grid w-full max-w-6xl gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-        <p className="max-w-md font-mono text-sm leading-relaxed text-[#F6F0E6]/85 md:text-base">
+      {/* Intro + CTA */}
+      <div className="relative z-30 flex w-full max-w-md flex-col items-start gap-5">
+        <p className="font-mono text-sm leading-relaxed text-[#F6F0E6]/85 md:text-base">
           <span className="text-[#E3738D]">[00]</span> Small, opinionated
           software by <span className="text-[#F6F0E6]">nodeyard</span> — network
           tooling, macOS companions, film emulation, Linux shells, colour
@@ -342,7 +342,7 @@ function Hero() {
         </p>
         <a
           href="#work"
-          className="text-eyebrow group inline-flex items-center gap-3 self-start rounded-full border-2 border-[#F6F0E6]/40 px-5 py-3 transition-[border-color,color,font-weight] duration-200 hover:border-[#E3738D] hover:font-bold hover:text-[#E3738D] md:self-auto"
+          className="text-eyebrow group inline-flex items-center gap-3 self-start rounded-full border-2 border-[#F6F0E6]/40 px-5 py-3 transition-[border-color,color,font-weight] duration-200 hover:border-[#E3738D] hover:font-bold hover:text-[#E3738D]"
         >
           Enter the yard
           <ArrowUpRight className="h-4 w-4 [stroke-width:1.75] transition-[stroke-width,transform] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:[stroke-width:3]" />
