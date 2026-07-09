@@ -36,16 +36,16 @@ function BackgroundWordmark() {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font =
-      "800 620px 'Inter Tight', ui-sans-serif, system-ui, sans-serif";
-    ctx.fillText("nodeyard", c.width / 2, c.height / 2 + 20);
+      "800 900px 'Inter Tight', ui-sans-serif, system-ui, sans-serif";
+    ctx.fillText("nodeyard", c.width / 2, c.height / 2 + 30);
     const tex = new THREE.CanvasTexture(c);
     tex.anisotropy = 16;
     tex.needsUpdate = true;
     return tex;
   }, []);
 
-  // Fit wordmark to ~92% of viewport width, keeping the 4:1 texture ratio.
-  const width = Math.min(viewport.width * 0.92, 14);
+  // Fit wordmark to ~98% of viewport width, keeping the 4:1 texture ratio.
+  const width = viewport.width * 0.98;
   const height = width / 4;
 
   return (
