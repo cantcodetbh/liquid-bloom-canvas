@@ -41,6 +41,11 @@ type Project = {
   noise: string;
 };
 
+const buildGrainSvg = (colour: string) =>
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="260" height="260" viewBox="0 0 260 260"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="1.28" numOctaves="3" seed="9" stitchTiles="stitch" result="noise"/><feColorMatrix in="noise" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4.4 -2.05" result="specks"/><feComposite in="SourceGraphic" in2="specks" operator="in"/></filter><rect width="260" height="260" fill="${colour}" filter="url(#grain)"/></svg>`,
+  );
+
 const projects: Project[] = [
   {
     index: "01",
@@ -143,15 +148,35 @@ function Index() {
 }
 
 function Header() {
+  const headerNoise = "rgba(15, 84, 70, 0.62)";
+  const headerGrainSvg = buildGrainSvg(headerNoise);
+  const headerNoiseTexture = {
+    backgroundImage: `url("data:image/svg+xml,${headerGrainSvg}"), radial-gradient(circle, ${headerNoise} 0 0.34px, transparent 0.54px), radial-gradient(circle, ${headerNoise} 0 0.24px, transparent 0.42px)`,
+    backgroundPosition: "left top, 0 0, 3px 5px",
+    backgroundRepeat: "repeat",
+    backgroundSize: "260px 260px, 4px 4px, 7px 7px",
+    maskImage:
+      "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.88) 24%, rgba(0,0,0,0.42) 58%, transparent 100%)",
+    WebkitMaskImage:
+      "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.88) 24%, rgba(0,0,0,0.42) 58%, transparent 100%)",
+  };
+
   return (
-    <header className="relative z-40 flex items-center justify-between px-6 py-6 md:px-10">
+    <header className="relative z-40 isolate flex items-center justify-between px-6 py-6 md:px-10">
+      {/* Top-down header grain, strongest at the very top and fading into the hero. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-40"
+        style={headerNoiseTexture}
+      />
+
       <a
         href="/"
-        className="text-wordmark text-2xl tracking-[-0.05em]"
+        className="text-wordmark relative z-10 text-2xl tracking-[-0.05em]"
       >
         nodeyard
       </a>
-      <nav className="text-eyebrow flex items-center gap-8">
+      <nav className="text-eyebrow relative z-10 flex items-center gap-8">
         <a href="#work" className="transition-colors hover:text-[#E3738D]">
           Work
         </a>
@@ -240,9 +265,7 @@ function Work() {
 
 function Slice({ project: p }: { project: Project }) {
   const isExternal = p.href.startsWith("http");
-  const grainSvg = encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="260" height="260" viewBox="0 0 260 260"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="1.28" numOctaves="3" seed="9" stitchTiles="stitch" result="noise"/><feColorMatrix in="noise" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4.4 -2.05" result="specks"/><feComposite in="SourceGraphic" in2="specks" operator="in"/></filter><rect width="260" height="260" fill="${p.noise}" filter="url(#grain)"/></svg>`,
-  );
+  const grainSvg = buildGrainSvg(p.noise);
   const speckleTexture = {
     backgroundImage: `url("data:image/svg+xml,${grainSvg}"), radial-gradient(circle, ${p.noise} 0 0.34px, transparent 0.54px), radial-gradient(circle, ${p.noise} 0 0.24px, transparent 0.42px)`,
     backgroundPosition: "right top, 0 0, 3px 5px",
