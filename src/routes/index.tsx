@@ -1,5 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useEffect, useRef } from "react";
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+  type WheelEvent,
+} from "react";
 import { ArrowUpRight } from "lucide-react";
 
 const LiquidSphere = lazy(() =>
@@ -43,6 +50,7 @@ type Project = {
 
 const roseHoverLink =
   "transition-[color,font-weight] duration-200 hover:font-bold hover:text-[#E3738D]";
+const WHEEL_STEP_LOCK_MS = 560;
 
 const buildGrainSvg = (colour: string) =>
   encodeURIComponent(
@@ -353,14 +361,40 @@ function Hero() {
 }
 
 function Work() {
+  const [activeProjectIndex, setActiveProjectIndex] = useState(0);
+  const wheelLockRef = useRef(0);
   const selectedWorkNoiseTexture = grainTexture(
     HERO_GRAIN,
     "linear-gradient(rgba(0,0,0,0.58), rgba(0,0,0,0.58))",
     "left bottom, 0 0, 3px 5px",
   );
 
+  const handleWorkWheel = (event: WheelEvent<HTMLElement>) => {
+    if (Math.abs(event.deltaY) < 10) return;
+
+    const direction = event.deltaY > 0 ? 1 : -1;
+    const canStepForward = direction > 0 && activeProjectIndex < projects.length - 1;
+    const canStepBackward = direction < 0 && activeProjectIndex > 0;
+
+    if (!canStepForward && !canStepBackward) return;
+
+    event.preventDefault();
+
+    const now = Date.now();
+    if (now - wheelLockRef.current < WHEEL_STEP_LOCK_MS) return;
+
+    wheelLockRef.current = now;
+    setActiveProjectIndex((current) =>
+      Math.min(projects.length - 1, Math.max(0, current + direction)),
+    );
+  };
+
   return (
-    <section id="work" className="relative z-10 flex w-full snap-start snap-always scroll-mt-0 flex-col">
+    <section
+      id="work"
+      className="relative z-10 flex w-full snap-start snap-always scroll-mt-0 flex-col"
+      onWheelCapture={handleWorkWheel}
+    >
       <div className="relative isolate flex items-end justify-between overflow-hidden border-t border-[#F6F0E6]/20 px-6 py-6 md:px-10">
         <div
           aria-hidden
@@ -369,21 +403,34 @@ function Work() {
         />
         <div className="text-eyebrow relative z-10">Selected work · 05</div>
         <div className="text-eyebrow relative z-10 hidden md:block">
-          Hover a slice to open ↓
+          Scroll or hover through slices ↓
         </div>
       </div>
 
       {/* Slice strip */}
       <div className="flex h-[calc(100svh-73px)] min-h-[520px] w-full border-t border-[#F6F0E6]/20 md:min-h-[580px]">
-        {projects.map((p) => (
-          <Slice key={p.index} project={p} />
+        {projects.map((p, projectIndex) => (
+          <Slice
+            key={p.index}
+            project={p}
+            isActive={projectIndex === activeProjectIndex}
+            onActivate={() => setActiveProjectIndex(projectIndex)}
+          />
         ))}
       </div>
     </section>
   );
 }
 
-function Slice({ project: p }: { project: Project }) {
+function Slice({
+  project: p,
+  isActive,
+  onActivate,
+}: {
+  project: Project;
+  isActive: boolean;
+  onActivate: () => void;
+}) {
   const isExternal = p.href.startsWith("http");
   const baseSpeckleTexture = grainTexture(
     p.noise,
@@ -401,19 +448,22 @@ function Slice({ project: p }: { project: Project }) {
       href={p.href}
       target={isExternal ? "_blank" : undefined}
       rel="noreferrer"
-      className={`group relative flex-[1] cursor-pointer overflow-hidden border-r border-[#F6F0E6]/20 transition-[flex-grow] duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] last:border-r-0 hover:flex-[6] ${p.bg} ${p.fg}`}
+      aria-current={isActive ? "true" : undefined}
+      onFocus={onActivate}
+      onMouseEnter={onActivate}
+      className={`group relative ${isActive ? "flex-[6]" : "flex-[1]"} cursor-pointer overflow-hidden border-r border-[#F6F0E6]/20 transition-[flex-grow] duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] last:border-r-0 ${p.bg} ${p.fg}`}
     >
       {/* Always-on slice grain so collapsed panels keep the same printed texture. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-80 transition-opacity duration-700 group-hover:opacity-55"
+        className={`pointer-events-none absolute inset-0 transition-opacity duration-700 ${isActive ? "opacity-55" : "opacity-80"}`}
         style={baseSpeckleTexture}
       />
 
-      {/* Stronger hover grain that blooms in from the right on expansion. */}
+      {/* Stronger active grain that blooms in from the right on expansion. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100"
+        className={`pointer-events-none absolute inset-0 transition-opacity duration-700 ${isActive ? "opacity-100" : "opacity-0"}`}
         style={speckleTexture}
       />
 
@@ -425,14 +475,30 @@ function Slice({ project: p }: { project: Project }) {
       </div>
 
       {/* Rotated title (collapsed state) */}
-      <div className="absolute left-1/2 top-20 -translate-x-1/2 transition-all duration-700 group-hover:left-10 group-hover:top-14 group-hover:translate-x-0 md:group-hover:top-16">
-        <h3 className="text-wordmark origin-left rotate-90 whitespace-nowrap text-3xl transition-all duration-700 group-hover:rotate-0 group-hover:text-5xl md:group-hover:text-6xl">
+      <div
+        className={`absolute transition-all duration-700 ${
+          isActive
+            ? "left-10 top-14 translate-x-0 md:top-16"
+            : "left-1/2 top-20 -translate-x-1/2"
+        }`}
+      >
+        <h3
+          className={`text-wordmark origin-left whitespace-nowrap transition-all duration-700 ${
+            isActive ? "rotate-0 text-5xl md:text-6xl" : "rotate-90 text-3xl"
+          }`}
+        >
           {p.title}
         </h3>
       </div>
 
       {/* Expanded detail */}
-      <div className="pointer-events-none flex h-full flex-col justify-center overflow-y-auto p-6 pt-28 opacity-0 transition-opacity duration-500 delay-200 group-hover:pointer-events-auto group-hover:opacity-100 md:p-10 md:pt-32">
+      <div
+        className={`flex h-full flex-col justify-center overflow-y-auto p-6 pt-28 transition-opacity duration-500 delay-200 md:p-10 md:pt-32 ${
+          isActive
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0"
+        }`}
+      >
         <span className={`text-eyebrow mb-4 ${p.accent}`}>
           {p.index} / {p.kind}
         </span>
@@ -451,7 +517,11 @@ function Slice({ project: p }: { project: Project }) {
         </div>
         <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest">
           <span>{p.cta}</span>
-          <span className={`h-px w-10 ${p.fg === "text-[#F6F0E6]" ? "bg-[#F6F0E6]" : "bg-[#2E0A17]"} transition-all duration-500 group-hover:w-20`} />
+          <span
+            className={`h-px w-10 ${
+              p.fg === "text-[#F6F0E6]" ? "bg-[#F6F0E6]" : "bg-[#2E0A17]"
+            } transition-all duration-500 ${isActive ? "w-20" : ""}`}
+          />
           <ArrowUpRight className="h-4 w-4" />
         </div>
       </div>
