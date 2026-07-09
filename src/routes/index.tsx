@@ -55,7 +55,7 @@ const projects: Project[] = [
     fg: "text-[#F6F0E6]",
     accent: "text-[#E3738D]",
     chipBorder: "border-[#F6F0E6]/25",
-    noise: "rgba(209, 245, 232, 0.52)",
+    noise: "rgba(8, 1, 5, 0.72)",
   },
   {
     index: "02",
@@ -70,7 +70,7 @@ const projects: Project[] = [
     fg: "text-[#F6F0E6]",
     accent: "text-[#E3738D]",
     chipBorder: "border-[#F6F0E6]/25",
-    noise: "rgba(125, 227, 233, 0.52)",
+    noise: "rgba(42, 7, 5, 0.66)",
   },
   {
     index: "03",
@@ -85,7 +85,7 @@ const projects: Project[] = [
     fg: "text-[#2E0A17]",
     accent: "text-[#2E0A17]",
     chipBorder: "border-[#2E0A17]/30",
-    noise: "rgba(66, 162, 217, 0.58)",
+    noise: "rgba(86, 34, 9, 0.58)",
   },
   {
     index: "04",
@@ -100,7 +100,7 @@ const projects: Project[] = [
     fg: "text-[#2E0A17]",
     accent: "text-[#821C16]",
     chipBorder: "border-[#2E0A17]/30",
-    noise: "rgba(38, 88, 194, 0.58)",
+    noise: "rgba(126, 82, 13, 0.5)",
   },
   {
     index: "05",
@@ -115,7 +115,7 @@ const projects: Project[] = [
     fg: "text-[#2E0A17]",
     accent: "text-[#BD5D26]",
     chipBorder: "border-[#2E0A17]/30",
-    noise: "rgba(9, 15, 25, 0.68)",
+    noise: "rgba(166, 142, 100, 0.62)",
   },
 ];
 
@@ -306,7 +306,7 @@ function Slice({ project: p }: { project: Project }) {
       rel="noreferrer"
       className={`group relative flex-[1] cursor-pointer overflow-hidden border-r border-[#F6F0E6]/20 transition-[flex-grow] duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] last:border-r-0 hover:flex-[6] ${p.bg} ${p.fg}`}
     >
-      {/* Dense inverted-colour grain that blooms in from the right on hover. */}
+      {/* Dense darker grain that blooms in from the right on hover. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100"
