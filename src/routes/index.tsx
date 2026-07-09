@@ -350,11 +350,22 @@ function Hero() {
 }
 
 function Work() {
+  const selectedWorkNoiseTexture = grainTexture(
+    HERO_GRAIN,
+    "linear-gradient(rgba(0,0,0,0.58), rgba(0,0,0,0.58))",
+    "left bottom, 0 0, 3px 5px",
+  );
+
   return (
     <section id="work" className="relative z-10 flex w-full snap-start snap-always scroll-mt-0 flex-col">
-      <div className="flex items-end justify-between border-t border-[#F6F0E6]/20 px-6 py-6 md:px-10">
-        <div className="text-eyebrow">Selected work · 05</div>
-        <div className="text-eyebrow hidden md:block">
+      <div className="relative isolate flex items-end justify-between overflow-hidden border-t border-[#F6F0E6]/20 px-6 py-6 md:px-10">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0"
+          style={selectedWorkNoiseTexture}
+        />
+        <div className="text-eyebrow relative z-10">Selected work · 05</div>
+        <div className="text-eyebrow relative z-10 hidden md:block">
           Hover a slice to open ↓
         </div>
       </div>
@@ -371,6 +382,11 @@ function Work() {
 
 function Slice({ project: p }: { project: Project }) {
   const isExternal = p.href.startsWith("http");
+  const baseSpeckleTexture = grainTexture(
+    p.noise,
+    "linear-gradient(rgba(0,0,0,0.34), rgba(0,0,0,0.34))",
+    "left top, 0 0, 3px 5px",
+  );
   const speckleTexture = grainTexture(
     p.noise,
     "linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.96) 16%, rgba(0,0,0,0.68) 38%, rgba(0,0,0,0.3) 62%, transparent 100%)",
@@ -384,7 +400,14 @@ function Slice({ project: p }: { project: Project }) {
       rel="noreferrer"
       className={`group relative flex-[1] cursor-pointer overflow-hidden border-r border-[#F6F0E6]/20 transition-[flex-grow] duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] last:border-r-0 hover:flex-[6] ${p.bg} ${p.fg}`}
     >
-      {/* Dense darker grain that blooms in from the right on hover. */}
+      {/* Always-on slice grain so collapsed panels keep the same printed texture. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-80 transition-opacity duration-700 group-hover:opacity-55"
+        style={baseSpeckleTexture}
+      />
+
+      {/* Stronger hover grain that blooms in from the right on expansion. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100"
