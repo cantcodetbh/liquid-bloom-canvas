@@ -11,14 +11,13 @@ const noise = (x: number, y: number, z: number, t: number) => {
   return (a + b + c) / 3;
 };
 
-// Full-viewport rose backdrop so the transmission material samples the
-// hero's backdrop colour instead of the transparent (black) canvas clear.
+// Full-viewport teal backdrop so the WebGL canvas matches the hero colour.
 function TealBackdrop() {
   const { viewport } = useThree();
   return (
     <mesh position={[0, 0, -4]}>
       <planeGeometry args={[viewport.width * 4, viewport.height * 4]} />
-      <meshBasicMaterial color="#E3738D" toneMapped={false} />
+      <meshBasicMaterial color="#2D9B83" toneMapped={false} />
     </mesh>
   );
 }
@@ -139,6 +138,30 @@ function WaterBlob() {
     const pos = geometry.attributes.position.array as Float32Array;
     return new Float32Array(pos);
   }, [geometry]);
+
+  const rosePatchTexture = useMemo(() => {
+    const c = document.createElement("canvas");
+    c.width = 1024;
+    c.height = 1024;
+
+    const ctx = c.getContext("2d")!;
+    const gradient = ctx.createRadialGradient(512, 512, 80, 512, 512, 512);
+    gradient.addColorStop(0, "rgba(227, 115, 141, 0.98)");
+    gradient.addColorStop(0.48, "rgba(227, 115, 141, 0.9)");
+    gradient.addColorStop(0.76, "rgba(227, 115, 141, 0.28)");
+    gradient.addColorStop(1, "rgba(227, 115, 141, 0)");
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, c.width, c.height);
+
+    const tex = new THREE.CanvasTexture(c);
+    tex.needsUpdate = true;
+    return tex;
+  }, []);
+
+  useEffect(() => {
+    return () => rosePatchTexture.dispose();
+  }, [rosePatchTexture]);
 
   useEffect(() => {
     const handlePointerMove = (event: PointerEvent) => {
@@ -276,7 +299,20 @@ function WaterBlob() {
         />
       </mesh>
 
-      <mesh geometry={geometry} renderOrder={2}>
+      {/* Soft rose patch behind the liquid only, so the rest of the hero stays teal. */}
+      <mesh position={[0, 0, -0.44]} renderOrder={2}>
+        <planeGeometry args={[4.35, 4.05]} />
+        <meshBasicMaterial
+          map={rosePatchTexture}
+          transparent
+          opacity={0.92}
+          depthWrite={false}
+          depthTest={false}
+          toneMapped={false}
+        />
+      </mesh>
+
+      <mesh geometry={geometry} renderOrder={3}>
         <MeshTransmissionMaterial
           samples={12}
           resolution={1024}
