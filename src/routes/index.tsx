@@ -92,7 +92,7 @@ const projects: Project[] = [
     tags: ["Linux", "Quickshell", "Arch", "Hyprland"],
     href: "https://github.com/cantcodetbh/homeshell",
     cta: "View project",
-    bg: "bg-[#E3738D]",
+    bg: "bg-[#D9A73D]",
     fg: "text-[#2E0A17]",
     accent: "text-[#821C16]",
     chipBorder: "border-[#2E0A17]/30",
