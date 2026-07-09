@@ -1,12 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  lazy,
-  Suspense,
-  useEffect,
-  useRef,
-  useState,
-  type WheelEvent,
-} from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 
 const LiquidSphere = lazy(() =>
@@ -361,39 +354,71 @@ function Hero() {
 }
 
 function Work() {
-  const [activeProjectIndex, setActiveProjectIndex] = useState(0);
+  const [activeProjectIndex, setActiveProjectIndex] = useState<number | null>(null);
+  const activeProjectIndexRef = useRef<number | null>(null);
   const wheelLockRef = useRef(0);
+  const workSectionRef = useRef<HTMLElement | null>(null);
   const selectedWorkNoiseTexture = grainTexture(
     HERO_GRAIN,
     "linear-gradient(rgba(0,0,0,0.58), rgba(0,0,0,0.58))",
     "left bottom, 0 0, 3px 5px",
   );
 
-  const handleWorkWheel = (event: WheelEvent<HTMLElement>) => {
-    if (Math.abs(event.deltaY) < 10) return;
-
-    const direction = event.deltaY > 0 ? 1 : -1;
-    const canStepForward = direction > 0 && activeProjectIndex < projects.length - 1;
-    const canStepBackward = direction < 0 && activeProjectIndex > 0;
-
-    if (!canStepForward && !canStepBackward) return;
-
-    event.preventDefault();
-
-    const now = Date.now();
-    if (now - wheelLockRef.current < WHEEL_STEP_LOCK_MS) return;
-
-    wheelLockRef.current = now;
-    setActiveProjectIndex((current) =>
-      Math.min(projects.length - 1, Math.max(0, current + direction)),
-    );
+  const activateProject = (projectIndex: number) => {
+    activeProjectIndexRef.current = projectIndex;
+    setActiveProjectIndex(projectIndex);
   };
+
+  useEffect(() => {
+    activeProjectIndexRef.current = activeProjectIndex;
+  }, [activeProjectIndex]);
+
+  useEffect(() => {
+    const workSection = workSectionRef.current;
+    if (!workSection) return;
+
+    const handleWorkWheel = (event: globalThis.WheelEvent) => {
+      if (Math.abs(event.deltaY) < 10) return;
+
+      const direction = event.deltaY > 0 ? 1 : -1;
+      const currentIndex = activeProjectIndexRef.current;
+      let nextIndex: number | null | undefined;
+
+      if (direction > 0) {
+        if (currentIndex === null) {
+          nextIndex = 0;
+        } else if (currentIndex < projects.length - 1) {
+          nextIndex = currentIndex + 1;
+        }
+      } else if (currentIndex !== null) {
+        nextIndex = currentIndex > 0 ? currentIndex - 1 : null;
+      }
+
+      if (nextIndex === undefined) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const now = Date.now();
+      if (now - wheelLockRef.current < WHEEL_STEP_LOCK_MS) return;
+
+      wheelLockRef.current = now;
+      activeProjectIndexRef.current = nextIndex;
+      setActiveProjectIndex(nextIndex);
+    };
+
+    workSection.addEventListener("wheel", handleWorkWheel, { passive: false });
+
+    return () => {
+      workSection.removeEventListener("wheel", handleWorkWheel);
+    };
+  }, []);
 
   return (
     <section
+      ref={workSectionRef}
       id="work"
       className="relative z-10 flex w-full snap-start snap-always scroll-mt-0 flex-col"
-      onWheelCapture={handleWorkWheel}
     >
       <div className="relative isolate flex items-end justify-between overflow-hidden border-t border-[#F6F0E6]/20 px-6 py-6 md:px-10">
         <div
@@ -414,7 +439,7 @@ function Work() {
             key={p.index}
             project={p}
             isActive={projectIndex === activeProjectIndex}
-            onActivate={() => setActiveProjectIndex(projectIndex)}
+            onActivate={() => activateProject(projectIndex)}
           />
         ))}
       </div>
