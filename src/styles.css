@@ -119,6 +119,18 @@ footer .type-stack {
   gap: var(--space-inline);
 }
 
+/* Keep slice content anchored to the same 24px inset in both states. */
+#work .group:hover > div:nth-of-type(4) {
+  left: 1.5rem;
+}
+
+@media (min-width: 48rem) {
+  #work .group:hover > div:last-child {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
 @utility text-wordmark {
   font-family: var(--font-sans);
   font-weight: 800;
