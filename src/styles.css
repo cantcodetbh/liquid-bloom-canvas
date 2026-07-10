@@ -113,6 +113,11 @@
     background: var(--rose);
     color: var(--maroon);
   }
+
+  /* Keep the refracted hero wordmark visually connected to the header. */
+  #hero canvas {
+    transform: translateY(clamp(-3.5rem, -5svh, -2rem));
+  }
 }
 
 @utility text-wordmark {
