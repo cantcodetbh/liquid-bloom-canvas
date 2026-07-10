@@ -328,7 +328,7 @@ function Hero() {
       {/* Top-left eyebrow */}
       <div className="text-eyebrow relative z-30 flex items-center gap-[var(--space-inline)] pt-[var(--space-kicker-title)]">
         <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#E3738D]" />
-        Portfolio · MMXXVI · v03
+        Software, systems & experiments · West Yorkshire
       </div>
 
       {/* Intro + CTA */}
@@ -502,7 +502,7 @@ function Footer() {
             palette.nodeyard.co.uk ↗
           </a>
           <span className="pt-[var(--space-inline)] opacity-60">
-            © {new Date().getFullYear()} nodeyard · Manchester
+            © {new Date().getFullYear()} nodeyard · West Yorkshire
           </span>
         </div>
       </div>
