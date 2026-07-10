@@ -260,14 +260,20 @@ function CursorFollower() {
 
 function Header() {
   return (
-    <header className="relative z-40 isolate flex items-center justify-between px-6 py-6 md:px-10">
-      <a
-        href="/"
-        className="text-wordmark relative z-10 text-2xl tracking-[-0.05em]"
-      >
-        nodeyard
-      </a>
-      <nav className="text-eyebrow relative z-10 flex items-center gap-[calc(var(--space-inline)*4)]">
+    <header className="relative z-40 isolate flex items-start justify-between px-6 pb-2 pt-4 md:px-10 md:pb-3 md:pt-5">
+      <div className="relative z-10 flex flex-col items-start gap-2">
+        <a
+          href="/"
+          className="text-wordmark text-xl tracking-[-0.05em] md:text-[1.35rem]"
+        >
+          nodeyard
+        </a>
+        <div className="flex max-w-[13rem] items-start gap-2 font-mono text-[0.52rem] uppercase leading-[1.35] tracking-[0.14em] text-[#F6F0E6]/65 sm:max-w-none sm:items-center sm:whitespace-nowrap md:text-[0.6rem]">
+          <span className="mt-[0.3em] inline-block h-1 w-1 shrink-0 rounded-full bg-[#E3738D] sm:mt-0" />
+          <span>Software, systems & experiments · West Yorkshire</span>
+        </div>
+      </div>
+      <nav className="text-eyebrow relative z-10 flex items-center gap-[calc(var(--space-inline)*3)] pt-0.5 md:gap-[calc(var(--space-inline)*4)]">
         <a href="#work" className={roseHoverLink}>
           Work
         </a>
@@ -310,12 +316,12 @@ function HeroGrainField() {
 
 function Hero() {
   return (
-    <section className="relative z-20 isolate flex min-h-[calc(100svh-76px)] flex-col justify-between overflow-visible px-6 pb-[var(--space-section)] pt-2 md:px-10">
-      {/* Canvas: 3D "nodeyard" wordmark refracted through the transparent sphere */}
-      <div className="pointer-events-none absolute inset-x-0 -top-24 -bottom-32 z-20 flex items-center justify-center overflow-visible">
+    <section className="relative z-20 isolate flex min-h-[calc(100svh-64px)] flex-col justify-end overflow-visible px-6 pb-[var(--space-section)] md:px-10">
+      {/* Taller frame keeps the raised liquid composition inside its own canvas. */}
+      <div className="pointer-events-none absolute inset-x-0 -top-32 -bottom-8 z-20 flex items-center justify-center overflow-visible">
         <div
           className="relative"
-          style={{ width: "100vw", height: "min(820px, 86vh)" }}
+          style={{ width: "100vw", height: "min(980px, 104svh)" }}
         >
           <Suspense fallback={null}>
             <LiquidSphere />
@@ -324,12 +330,6 @@ function Hero() {
       </div>
 
       <HeroGrainField />
-
-      {/* Top-left eyebrow */}
-      <div className="text-eyebrow relative z-30 flex items-center gap-[var(--space-inline)] pt-[var(--space-kicker-title)]">
-        <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#E3738D]" />
-        Software, systems & experiments · West Yorkshire
-      </div>
 
       {/* Intro + CTA */}
       <div className="type-stack-action relative z-30 w-full max-w-[var(--measure-copy)]">
