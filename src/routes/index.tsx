@@ -334,11 +334,11 @@ function Hero() {
       {/* Intro + CTA */}
       <div className="type-stack-action relative z-30 w-full max-w-[var(--measure-copy)]">
         <p className="text-copy text-[#F6F0E6]/85">
-          <span className="text-[#E3738D]">[00]</span> Small, opinionated
-          software by <span className="text-[#F6F0E6]">nodeyard</span> — network
-          tooling, macOS companions, film emulation, Linux shells, colour
-          tools. Built quietly, refracted through whatever the current
-          obsession is.
+          <span className="mr-[0.7em] inline-block h-1 w-1 rounded-full bg-[#E3738D] align-middle" />
+          Small, opinionated software by{" "}
+          <span className="text-[#F6F0E6]">nodeyard</span> — network tooling,
+          macOS companions, film emulation, Linux shells, colour tools. Built
+          quietly, refracted through whatever the current obsession is.
         </p>
         <a
           href="#work"
