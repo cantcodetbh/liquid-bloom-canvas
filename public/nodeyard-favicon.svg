@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Nodeyard">
+  <rect width="64" height="64" fill="#050505"/>
+  <path
+    d="M17 45V22M18 31C22 22 31 20 37 22C43 24 46 28 46 36V45"
+    fill="none"
+    stroke="#F6F0E6"
+    stroke-width="7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M14 54H49"
+    fill="none"
+    stroke="#F6F0E6"
+    stroke-width="5"
+    stroke-linecap="square"
+  />
+</svg>
