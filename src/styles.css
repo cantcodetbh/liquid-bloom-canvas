@@ -115,6 +115,10 @@
   }
 }
 
+footer .type-stack {
+  gap: var(--space-inline);
+}
+
 @utility text-wordmark {
   font-family: var(--font-sans);
   font-weight: 800;
